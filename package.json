@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "description": "A SceneryStack simulation: Crystal Lattice.",
+  "description": "Explore crystal structure: 2D Bravais lattices, cubic unit cells and packing factors, close packing, Miller indices, and aperiodic order.",
   "license": "AGPL-3.0-or-later",
   "repository": {
     "type": "git",
