@@ -136,8 +136,6 @@ A11y strings live under the `a11y` key per screen in each locale JSON, reached t
   underneath happens to be, in either profile, and `AtomNode.ts`'s `#ffffff` is the fallback when a
   caller hands it something that is not a colour at all. Putting them in the profile would invite a
   projector-mode value that makes the wedge invisible on a light sphere.
-- `scripts/rename-sim.ts` and `scripts/scaffold-screens.ts` are inherited from the template and no
-  longer apply to this repo. They stay in the tree so template updates merge cleanly.
 
 
 ### `package.json` overrides

@@ -64,8 +64,6 @@ npm start        # dev server → http://localhost:5173
 
 The sim starts at `version: "0.0.0"` in `package.json`. Bump only when cutting a release (for example `npm version patch` and a matching git tag).
 
-`scripts/rename-sim.ts` and `scripts/scaffold-screens.ts` are inherited from the template and are no longer used here; they remain in the tree so template updates can still be merged cleanly.
-
 ## Tech Stack
 
 | Tool | Version | Purpose |
