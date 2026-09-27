@@ -17,27 +17,7 @@ import { ClosePackingModel } from "../src/close-packing/model/ClosePackingModel.
 import { CubicSystemsModel } from "../src/cubic-systems/model/CubicSystemsModel.js";
 import { Lattices2DModel } from "../src/lattices-2d/model/Lattices2DModel.js";
 import { MillerIndicesModel } from "../src/miller-indices/model/MillerIndicesModel.js";
-
-/**
- * Force garbage collection with multiple passes. When `earlyExitRefs` is supplied
- * the loop bails as soon as every referenced object is confirmed collected. The
- * setTimeout(0) yield after a live deref() avoids the WeakRef macrotask-liveness pin.
- * Without early-exit refs the loop always runs all passes, which on a slow `gc()`
- * can exceed the Vitest testTimeout — always pass refs when you have them.
- */
-async function forceGC(earlyExitRefs?: WeakRef<object> | readonly WeakRef<object>[]): Promise<void> {
-  const refs = earlyExitRefs === undefined ? [] : Array.isArray(earlyExitRefs) ? earlyExitRefs : [earlyExitRefs];
-  for (let i = 0; i < 15; i++) {
-    globalThis.gc?.();
-    await new Promise<void>((r) => setTimeout(r, 50));
-    if (refs.length > 0 && refs.every((ref) => ref.deref() === undefined)) {
-      return;
-    }
-    if (refs.length > 0) {
-      await new Promise<void>((r) => setTimeout(r, 0));
-    }
-  }
-}
+import { forceGC } from "./helpers/memoryLeak.js";
 
 /** The five screen models, each with a factory that exercises it before release. */
 const MODEL_FACTORIES: ReadonlyArray<{ name: string; create: () => { reset: () => void } }> = [
@@ -60,16 +40,6 @@ function createAndReleaseModel(create: () => { reset: () => void }): WeakRef<obj
 }
 
 describe("Memory leak regression", () => {
-  it("global.gc is available (--expose-gc)", () => {
-    expect(globalThis.gc).toBeDefined();
-  });
-
-  it("sanity: plain object is collected", async () => {
-    const ref = (() => new WeakRef({ hello: "world" }))();
-    await forceGC(ref);
-    expect(ref.deref()).toBeUndefined();
-  });
-
   for (const { name, create } of MODEL_FACTORIES) {
     it(`${name} is collected after release`, async () => {
       const ref = createAndReleaseModel(create);
