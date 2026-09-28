@@ -10,7 +10,7 @@ argument, not a topic list: Screens 1–4 build up the repeating-unit-cell pictu
 withdraws it. Educator-facing physics is in [`doc/model.md`](doc/model.md); architecture is in
 [`doc/implementation-notes.md`](doc/implementation-notes.md).
 
-## The one thing to understand first
+### The one thing to understand first
 
 **All crystallography lives in Scenery-free modules under `src/common/model/`.** Those files import
 nothing from `scenerystack/scenery` and hold no `Property` — they are pure functions over plain data,
@@ -54,64 +54,9 @@ a view or a screen model is the mistake this codebase is arranged to prevent.
 | `src/miller-indices/` | Miller Indices |
 | `src/aperiodic-order/` | Aperiodic Order |
 
-## Pitfalls
+## Model
 
-### `rebuild()` runs before subclass fields exist
-
-`Projected3DNode` calls `rebuild()` from its own constructor, so every subclass guards the top with
-`if (this.model === undefined) return;`. Removing that guard crashes on construction.
-
-### Position projected nodes with `x`/`y`, never `centerX`/`centerY`
-
-The projection already centres its content on the node's local origin. A bounds-based `centerX` is
-computed once, at a moment when the content may be empty, and then drifts every time a rebuild
-changes the extent.
-
-### Miller indices are exact rationals, not floats
-
-`Rational` exists so `(200)` never rounds into `(100)`. Do not "simplify" the pipeline to floats.
-
-### The atomic radius slider is deliberately unclamped
-
-`packingFactor` is computed from the *current* radius and will exceed 1. That is the point — a
-student drags into the unphysical regime and the APF follows them there. `spheresOverlap` flags it.
-
-### Diffraction: exclude the forward peak, trim to a disc
-
-I(0) = N² swamps the Bragg peaks; `FORWARD_PEAK_EXCLUSION` keeps it out of the normalization and the
-peak search. And a patch's *outline* imprints on its transform, so `circularSubset` runs first.
-`measureSymmetryOrder`'s tolerance is tied to the k-grid step — loosening it lets a spurious 11-fold
-match beat the genuine 10-fold one.
-
-### Screen 4's intercept handles snap to unit fractions
-
-The plane (hkl) nearest the origin cuts the a axis at exactly 1/h, so the only intercepts a drawable
-plane can have are ±1/n up to `MAX_MILLER_INDEX`, plus "parallel". The handles have a stop at each,
-and a free continuous track would let two innocuous drags produce (9 8 0). A consequence: **a drag can
-only ever produce a reduced triple.** (200) is unreachable by dragging, because an intercept of 1/2
-with the other axes parallel reduces to (100) — the common factor is not in the intercepts. That is
-why (200) stays a preset button with a note beside it.
-
-The handles live in a layer *outside* `Projected3DNode`'s rebuilt content. A handle created inside
-`rebuild()` would be replaced on the first camera frame and the drag would die.
-
-### Screen 5's placement candidates are labelled, not filtered
-
-`candidatePlacements` offers both tile shapes on both sides of every open edge and drops only what
-would physically overlap; `isPatchPlacementLegal` then marks each one legal or not. The illegal ones
-are drawn. They fit flush and are refused anyway, which is the entire content of "matching rules" —
-hiding them would leave a student thinking the shapes simply do not fit.
-
-`isPatchPlacementLegal` reverses a vertex arc when the new corner lands at its clockwise end. That is
-sound only because the vertex atlas is closed under reflection, which `tests/AperiodicTiling.test.ts`
-pins directly. Getting stuck (no legal slot left) is a reachable, reported state, not a bug.
-
-### The hat port is load-bearing and non-obvious
-
-`EinsteinTiling.ts` carries specific vertex coordinates and a 29-entry rule table from Kaplan's
-`hatviz` (BSD 3-Clause — see `CREDITS.md`). None of it can be re-derived by inspection. The tests
-guard it with two invariants that break loudly: every hat in a patch has equal area, and the
-unreflected:reflected ratio approaches φ⁴.
+Physics and behavior: `doc/model.md`.
 
 ## Accessibility
 
@@ -191,6 +136,67 @@ npm run lint && npm run check && npm run build && npm test
 | `npm run test:fuzz` | Playwright fuzz smoke |
 | `npm run icons` | Regenerate PWA icons from `public/icons/icon.svg` |
 
-## PWA
+## Development notes
+
+### Pitfalls
+
+### `rebuild()` runs before subclass fields exist
+
+`Projected3DNode` calls `rebuild()` from its own constructor, so every subclass guards the top with
+`if (this.model === undefined) return;`. Removing that guard crashes on construction.
+
+### Position projected nodes with `x`/`y`, never `centerX`/`centerY`
+
+The projection already centres its content on the node's local origin. A bounds-based `centerX` is
+computed once, at a moment when the content may be empty, and then drifts every time a rebuild
+changes the extent.
+
+### Miller indices are exact rationals, not floats
+
+`Rational` exists so `(200)` never rounds into `(100)`. Do not "simplify" the pipeline to floats.
+
+### The atomic radius slider is deliberately unclamped
+
+`packingFactor` is computed from the *current* radius and will exceed 1. That is the point — a
+student drags into the unphysical regime and the APF follows them there. `spheresOverlap` flags it.
+
+### Diffraction: exclude the forward peak, trim to a disc
+
+I(0) = N² swamps the Bragg peaks; `FORWARD_PEAK_EXCLUSION` keeps it out of the normalization and the
+peak search. And a patch's *outline* imprints on its transform, so `circularSubset` runs first.
+`measureSymmetryOrder`'s tolerance is tied to the k-grid step — loosening it lets a spurious 11-fold
+match beat the genuine 10-fold one.
+
+### Screen 4's intercept handles snap to unit fractions
+
+The plane (hkl) nearest the origin cuts the a axis at exactly 1/h, so the only intercepts a drawable
+plane can have are ±1/n up to `MAX_MILLER_INDEX`, plus "parallel". The handles have a stop at each,
+and a free continuous track would let two innocuous drags produce (9 8 0). A consequence: **a drag can
+only ever produce a reduced triple.** (200) is unreachable by dragging, because an intercept of 1/2
+with the other axes parallel reduces to (100) — the common factor is not in the intercepts. That is
+why (200) stays a preset button with a note beside it.
+
+The handles live in a layer *outside* `Projected3DNode`'s rebuilt content. A handle created inside
+`rebuild()` would be replaced on the first camera frame and the drag would die.
+
+### Screen 5's placement candidates are labelled, not filtered
+
+`candidatePlacements` offers both tile shapes on both sides of every open edge and drops only what
+would physically overlap; `isPatchPlacementLegal` then marks each one legal or not. The illegal ones
+are drawn. They fit flush and are refused anyway, which is the entire content of "matching rules" —
+hiding them would leave a student thinking the shapes simply do not fit.
+
+`isPatchPlacementLegal` reverses a vertex arc when the new corner lands at its clockwise end. That is
+sound only because the vertex atlas is closed under reflection, which `tests/AperiodicTiling.test.ts`
+pins directly. Getting stuck (no legal slot left) is a reachable, reported state, not a bug.
+
+### The hat port is load-bearing and non-obvious
+
+`EinsteinTiling.ts` carries specific vertex coordinates and a 29-entry rule table from Kaplan's
+`hatviz` (BSD 3-Clause — see `CREDITS.md`). None of it can be re-derived by inspection. The tests
+guard it with two invariants that break loudly: every hat in a patch has equal area, and the
+unreflected:reflected ratio approaches φ⁴.
+
+### PWA
 
 After `npm run build`, the sim is installable offline via Workbox (`dist/manifest.webmanifest`).
