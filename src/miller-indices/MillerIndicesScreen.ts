@@ -14,12 +14,16 @@ import { Screen } from "scenerystack/sim";
 import type { Tandem } from "scenerystack/tandem";
 import CrystalLatticeColors from "../CrystalLatticeColors.js";
 import { createMillerIndicesIcon } from "../common/CrystalLatticeScreenIcons.js";
+import type { CrystalLatticePreferencesModel } from "../preferences/CrystalLatticePreferencesModel.js";
 import { MillerIndicesModel } from "./model/MillerIndicesModel.js";
 import { MillerIndicesKeyboardHelpContent } from "./view/MillerIndicesKeyboardHelpContent.js";
 import { MillerIndicesScreenView } from "./view/MillerIndicesScreenView.js";
 
 // Require tandem to be explicit — accidental omission would break PhET-iO.
-type MillerIndicesScreenOptions = ScreenOptions & { tandem: Tandem };
+type MillerIndicesScreenOptions = ScreenOptions & {
+  tandem: Tandem;
+  preferences: CrystalLatticePreferencesModel;
+};
 
 export class MillerIndicesScreen extends Screen<MillerIndicesModel, MillerIndicesScreenView> {
   public constructor(options: MillerIndicesScreenOptions) {
@@ -30,6 +34,7 @@ export class MillerIndicesScreen extends Screen<MillerIndicesModel, MillerIndice
       (model) =>
         new MillerIndicesScreenView(model, {
           tandem: options.tandem.createTandem("view"),
+          preferences: options.preferences,
         }),
       optionize<MillerIndicesScreenOptions, EmptySelfOptions, ScreenOptions>()(
         {

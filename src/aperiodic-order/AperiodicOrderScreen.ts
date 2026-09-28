@@ -14,12 +14,16 @@ import { Screen } from "scenerystack/sim";
 import type { Tandem } from "scenerystack/tandem";
 import CrystalLatticeColors from "../CrystalLatticeColors.js";
 import { createAperiodicOrderIcon } from "../common/CrystalLatticeScreenIcons.js";
+import type { CrystalLatticePreferencesModel } from "../preferences/CrystalLatticePreferencesModel.js";
 import { AperiodicOrderModel } from "./model/AperiodicOrderModel.js";
 import { AperiodicOrderKeyboardHelpContent } from "./view/AperiodicOrderKeyboardHelpContent.js";
 import { AperiodicOrderScreenView } from "./view/AperiodicOrderScreenView.js";
 
 // Require tandem to be explicit — accidental omission would break PhET-iO.
-type AperiodicOrderScreenOptions = ScreenOptions & { tandem: Tandem };
+type AperiodicOrderScreenOptions = ScreenOptions & {
+  tandem: Tandem;
+  preferences: CrystalLatticePreferencesModel;
+};
 
 export class AperiodicOrderScreen extends Screen<AperiodicOrderModel, AperiodicOrderScreenView> {
   public constructor(options: AperiodicOrderScreenOptions) {
@@ -30,6 +34,7 @@ export class AperiodicOrderScreen extends Screen<AperiodicOrderModel, AperiodicO
       (model) =>
         new AperiodicOrderScreenView(model, {
           tandem: options.tandem.createTandem("view"),
+          preferences: options.preferences,
         }),
       optionize<AperiodicOrderScreenOptions, EmptySelfOptions, ScreenOptions>()(
         {

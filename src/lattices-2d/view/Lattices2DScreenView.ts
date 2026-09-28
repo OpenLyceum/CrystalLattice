@@ -36,21 +36,24 @@ import {
 } from "../../common/view/ControlFactory.js";
 import { DerivedQuantitiesPanel } from "../../common/view/DerivedQuantitiesPanel.js";
 import { StringManager } from "../../i18n/StringManager.js";
-import { getCrystalLatticePreferences } from "../../preferences/CrystalLatticePreferencesModel.js";
+import type { CrystalLatticePreferencesModel } from "../../preferences/CrystalLatticePreferencesModel.js";
 import { GAMMA_RANGE, LATTICE_VECTOR_RANGE, type Lattices2DModel } from "../model/Lattices2DModel.js";
 import { Lattice2DNode } from "./Lattice2DNode.js";
 import { Lattices2DScreenSummaryContent } from "./Lattices2DScreenSummaryContent.js";
 import { latticeTypeStringProperty } from "./latticeTypeStrings.js";
 
-export type Lattices2DScreenViewOptions = ScreenViewOptions;
+export type Lattices2DScreenViewOptions = ScreenViewOptions & {
+  preferences: CrystalLatticePreferencesModel;
+};
 
 export class Lattices2DScreenView extends ScreenView {
-  public constructor(model: Lattices2DModel, providedOptions?: Lattices2DScreenViewOptions) {
-    const options = optionize<Lattices2DScreenViewOptions, EmptySelfOptions, ScreenViewOptions>()(
+  public constructor(model: Lattices2DModel, providedOptions: Lattices2DScreenViewOptions) {
+    const { preferences, ...screenViewOptions } = providedOptions;
+    const options = optionize<ScreenViewOptions, EmptySelfOptions, ScreenViewOptions>()(
       {
         screenSummaryContent: new Lattices2DScreenSummaryContent(model),
       },
-      providedOptions,
+      screenViewOptions,
     );
     super(options);
 
@@ -58,7 +61,7 @@ export class Lattices2DScreenView extends ScreenView {
     const screenStrings = strings.getLattices2DStrings();
     const commonStrings = strings.getCommonStrings();
     const a11y = strings.getLattices2DA11yStrings();
-    const advancedVisibleProperty = getCrystalLatticePreferences().showAdvancedReadoutsProperty;
+    const advancedVisibleProperty = preferences.showAdvancedReadoutsProperty;
 
     this.addChild(
       new Rectangle(0, 0, this.layoutBounds.width, this.layoutBounds.height, {

@@ -28,14 +28,14 @@ import { CubicSystemsScreen } from "./cubic-systems/CubicSystemsScreen.js";
 import { StringManager } from "./i18n/StringManager.js";
 import { Lattices2DScreen } from "./lattices-2d/Lattices2DScreen.js";
 import { MillerIndicesScreen } from "./miller-indices/MillerIndicesScreen.js";
-import { getCrystalLatticePreferences } from "./preferences/CrystalLatticePreferencesModel.js";
+import { CrystalLatticePreferencesModel } from "./preferences/CrystalLatticePreferencesModel.js";
 import { CrystalLatticePreferencesNode } from "./preferences/CrystalLatticePreferencesNode.js";
 
 onReadyToLaunch(() => {
   const stringManager = StringManager.getInstance();
 
   // Simulation-specific preferences; initial values come from crystalLatticeQueryParameters.
-  const simPreferences = getCrystalLatticePreferences(Tandem.ROOT.createTandem("preferences"));
+  const simPreferences = new CrystalLatticePreferencesModel(Tandem.ROOT.createTandem("preferences"));
 
   const screens = [
     new Lattices2DScreen({
@@ -43,6 +43,7 @@ onReadyToLaunch(() => {
       name: stringManager.getScreenNames().lattices2DStringProperty,
       tandem: Tandem.ROOT.createTandem("lattices2DScreen"),
       backgroundColorProperty: CrystalLatticeColors.backgroundColorProperty,
+      preferences: simPreferences,
     }),
     new CubicSystemsScreen({
       // The screen name Property updates automatically when the locale changes
@@ -61,12 +62,14 @@ onReadyToLaunch(() => {
       name: stringManager.getScreenNames().millerIndicesStringProperty,
       tandem: Tandem.ROOT.createTandem("millerIndicesScreen"),
       backgroundColorProperty: CrystalLatticeColors.backgroundColorProperty,
+      preferences: simPreferences,
     }),
     new AperiodicOrderScreen({
       // The screen name Property updates automatically when the locale changes
       name: stringManager.getScreenNames().aperiodicOrderStringProperty,
       tandem: Tandem.ROOT.createTandem("aperiodicOrderScreen"),
       backgroundColorProperty: CrystalLatticeColors.backgroundColorProperty,
+      preferences: simPreferences,
     }),
   ];
 

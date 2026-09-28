@@ -32,7 +32,7 @@ import { GOLDEN_RATIO } from "../../common/model/PenroseTiling.js";
 import { controlColumn, createCheckbox, createRadioGroup, createTextButton } from "../../common/view/ControlFactory.js";
 import { DerivedQuantitiesPanel } from "../../common/view/DerivedQuantitiesPanel.js";
 import { StringManager } from "../../i18n/StringManager.js";
-import { getCrystalLatticePreferences } from "../../preferences/CrystalLatticePreferencesModel.js";
+import type { CrystalLatticePreferencesModel } from "../../preferences/CrystalLatticePreferencesModel.js";
 import { type AperiodicOrderModel, isRhombusMode, TilingMode } from "../model/AperiodicOrderModel.js";
 import { AperiodicOrderScreenSummaryContent } from "./AperiodicOrderScreenSummaryContent.js";
 import { DiffractionNode } from "./DiffractionNode.js";
@@ -42,13 +42,16 @@ import { TilingNode } from "./TilingNode.js";
 /** Height reserved at the bottom-right for the Reset All button. */
 const RESET_BUTTON_CLEARANCE = 60;
 
-export type AperiodicOrderScreenViewOptions = ScreenViewOptions;
+export type AperiodicOrderScreenViewOptions = ScreenViewOptions & {
+  preferences: CrystalLatticePreferencesModel;
+};
 
 export class AperiodicOrderScreenView extends ScreenView {
-  public constructor(model: AperiodicOrderModel, providedOptions?: AperiodicOrderScreenViewOptions) {
-    const options = optionize<AperiodicOrderScreenViewOptions, EmptySelfOptions, ScreenViewOptions>()(
+  public constructor(model: AperiodicOrderModel, providedOptions: AperiodicOrderScreenViewOptions) {
+    const { preferences, ...screenViewOptions } = providedOptions;
+    const options = optionize<ScreenViewOptions, EmptySelfOptions, ScreenViewOptions>()(
       { screenSummaryContent: new AperiodicOrderScreenSummaryContent(model) },
-      providedOptions,
+      screenViewOptions,
     );
     super(options);
 
@@ -56,7 +59,7 @@ export class AperiodicOrderScreenView extends ScreenView {
     const screenStrings = strings.getAperiodicOrderStrings();
     const commonStrings = strings.getCommonStrings();
     const a11y = strings.getAperiodicOrderA11yStrings();
-    const advancedVisibleProperty = getCrystalLatticePreferences().showAdvancedReadoutsProperty;
+    const advancedVisibleProperty = preferences.showAdvancedReadoutsProperty;
     const notApplicableProperty = commonStrings.notApplicableStringProperty;
 
     this.addChild(

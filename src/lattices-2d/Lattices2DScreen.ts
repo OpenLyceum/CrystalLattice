@@ -14,12 +14,13 @@ import { Screen } from "scenerystack/sim";
 import type { Tandem } from "scenerystack/tandem";
 import CrystalLatticeColors from "../CrystalLatticeColors.js";
 import { createLattices2DIcon } from "../common/CrystalLatticeScreenIcons.js";
+import type { CrystalLatticePreferencesModel } from "../preferences/CrystalLatticePreferencesModel.js";
 import { Lattices2DModel } from "./model/Lattices2DModel.js";
 import { Lattices2DKeyboardHelpContent } from "./view/Lattices2DKeyboardHelpContent.js";
 import { Lattices2DScreenView } from "./view/Lattices2DScreenView.js";
 
 // Require tandem to be explicit — accidental omission would break PhET-iO.
-type Lattices2DScreenOptions = ScreenOptions & { tandem: Tandem };
+type Lattices2DScreenOptions = ScreenOptions & { tandem: Tandem; preferences: CrystalLatticePreferencesModel };
 
 export class Lattices2DScreen extends Screen<Lattices2DModel, Lattices2DScreenView> {
   public constructor(options: Lattices2DScreenOptions) {
@@ -30,6 +31,7 @@ export class Lattices2DScreen extends Screen<Lattices2DModel, Lattices2DScreenVi
       (model) =>
         new Lattices2DScreenView(model, {
           tandem: options.tandem.createTandem("view"),
+          preferences: options.preferences,
         }),
       optionize<Lattices2DScreenOptions, EmptySelfOptions, ScreenOptions>()(
         {

@@ -40,23 +40,27 @@ import {
 } from "../../common/view/ControlFactory.js";
 import { DerivedQuantitiesPanel } from "../../common/view/DerivedQuantitiesPanel.js";
 import { StringManager } from "../../i18n/StringManager.js";
-import { getCrystalLatticePreferences } from "../../preferences/CrystalLatticePreferencesModel.js";
+import type { CrystalLatticePreferencesModel } from "../../preferences/CrystalLatticePreferencesModel.js";
 import { DIRECTION_PRESETS, type MillerIndicesModel, MillerMode, PLANE_PRESETS } from "../model/MillerIndicesModel.js";
 import { DerivationPanel } from "./DerivationPanel.js";
 import { MillerCellNode } from "./MillerCellNode.js";
 import { MillerIndicesScreenSummaryContent } from "./MillerIndicesScreenSummaryContent.js";
 
-export type MillerIndicesScreenViewOptions = ScreenViewOptions;
+export type MillerIndicesScreenViewOptions = ScreenViewOptions & {
+  preferences: CrystalLatticePreferencesModel;
+};
 
 export class MillerIndicesScreenView extends ScreenView {
   private readonly cellNode: MillerCellNode;
 
-  public constructor(model: MillerIndicesModel, providedOptions?: MillerIndicesScreenViewOptions) {
-    const options = optionize<MillerIndicesScreenViewOptions, EmptySelfOptions, ScreenViewOptions>()(
+  public constructor(model: MillerIndicesModel, providedOptions: MillerIndicesScreenViewOptions) {
+    const { preferences, ...screenViewOptions } = providedOptions;
+    const options = optionize<ScreenViewOptions, EmptySelfOptions, ScreenViewOptions>()(
       { screenSummaryContent: new MillerIndicesScreenSummaryContent(model) },
-      providedOptions,
+      screenViewOptions,
     );
     super(options);
+    const advancedVisibleProperty = preferences.showAdvancedReadoutsProperty;
 
     const strings = StringManager.getInstance();
     const screenStrings = strings.getMillerIndicesStrings();
@@ -197,7 +201,7 @@ export class MillerIndicesScreenView extends ScreenView {
           value: new PatternStringProperty(commonStrings.valuePerNmSquaredStringProperty, {
             value: new DerivedProperty([model.planarDensityProperty], (density) => toFixed(density, 1)),
           }),
-          visibleProperty: getCrystalLatticePreferences().showAdvancedReadoutsProperty,
+          visibleProperty: advancedVisibleProperty,
         },
       ],
       {
