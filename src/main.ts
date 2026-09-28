@@ -39,26 +39,31 @@ onReadyToLaunch(() => {
 
   const screens = [
     new Lattices2DScreen({
+      // The screen name Property updates automatically when the locale changes
       name: stringManager.getScreenNames().lattices2DStringProperty,
       tandem: Tandem.ROOT.createTandem("lattices2DScreen"),
       backgroundColorProperty: CrystalLatticeColors.backgroundColorProperty,
     }),
     new CubicSystemsScreen({
+      // The screen name Property updates automatically when the locale changes
       name: stringManager.getScreenNames().cubicSystemsStringProperty,
       tandem: Tandem.ROOT.createTandem("cubicSystemsScreen"),
       backgroundColorProperty: CrystalLatticeColors.backgroundColorProperty,
     }),
     new ClosePackingScreen({
+      // The screen name Property updates automatically when the locale changes
       name: stringManager.getScreenNames().closePackingStringProperty,
       tandem: Tandem.ROOT.createTandem("closePackingScreen"),
       backgroundColorProperty: CrystalLatticeColors.backgroundColorProperty,
     }),
     new MillerIndicesScreen({
+      // The screen name Property updates automatically when the locale changes
       name: stringManager.getScreenNames().millerIndicesStringProperty,
       tandem: Tandem.ROOT.createTandem("millerIndicesScreen"),
       backgroundColorProperty: CrystalLatticeColors.backgroundColorProperty,
     }),
     new AperiodicOrderScreen({
+      // The screen name Property updates automatically when the locale changes
       name: stringManager.getScreenNames().aperiodicOrderStringProperty,
       tandem: Tandem.ROOT.createTandem("aperiodicOrderScreen"),
       backgroundColorProperty: CrystalLatticeColors.backgroundColorProperty,
@@ -86,6 +91,7 @@ onReadyToLaunch(() => {
       },
     }),
 
+    // Optional: fill in credits shown in Help → About
     credits: {
       leadDesign: "OpenLyceum",
       softwareDevelopment: "OpenLyceum",
