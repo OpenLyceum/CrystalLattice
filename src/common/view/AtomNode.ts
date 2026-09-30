@@ -90,7 +90,7 @@ function toColor(value: TColor | TReadOnlyProperty<Color>): Color {
   if (value instanceof Color) {
     return value;
   }
-  return new Color(typeof value === "string" ? value : "#ffffff");
+  return Color.WHITE;
 }
 
 /**

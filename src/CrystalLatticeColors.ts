@@ -23,7 +23,7 @@
  * Add a new ProfileColorProperty entry to the CrystalLatticeColors object below.
  * Always provide both "default" and "projector" values.
  */
-import { ProfileColorProperty } from "scenerystack/scenery";
+import { Color, ProfileColorProperty } from "scenerystack/scenery";
 import CrystalLatticeNamespace from "./CrystalLatticeNamespace.js";
 
 const CrystalLatticeColors = {
@@ -265,6 +265,24 @@ const CrystalLatticeColors = {
   warningColorProperty: new ProfileColorProperty(CrystalLatticeNamespace, "warning", {
     default: "#ff8a80",
     projector: "#c62828",
+  }),
+
+  /** Translucent highlight over the shared portion of an atom. */
+  sharingWedgeColorProperty: new ProfileColorProperty(CrystalLatticeNamespace, "sharingWedge", {
+    default: new Color(255, 255, 255, 0.55),
+    projector: new Color(255, 255, 255, 0.55),
+  }),
+
+  /** Disc behind a sharing-fraction label. Dark in both profiles so the label stays light. */
+  sharingBadgeColorProperty: new ProfileColorProperty(CrystalLatticeNamespace, "sharingBadge", {
+    default: new Color(0, 0, 0, 0.65),
+    projector: new Color(0, 0, 0, 0.65),
+  }),
+
+  /** Sharing-fraction label, drawn on {@link sharingBadgeColorProperty}. */
+  sharingLabelColorProperty: new ProfileColorProperty(CrystalLatticeNamespace, "sharingLabel", {
+    default: new Color(255, 255, 255),
+    projector: new Color(255, 255, 255),
   }),
 };
 

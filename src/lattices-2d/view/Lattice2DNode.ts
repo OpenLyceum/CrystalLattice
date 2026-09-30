@@ -20,7 +20,7 @@ import { Multilink, type TReadOnlyProperty, type UnknownMultilink } from "scener
 import { Vector2 } from "scenerystack/dot";
 import { Shape } from "scenerystack/kite";
 import { ModelViewTransform2 } from "scenerystack/phetcommon";
-import { Circle, DragListener, KeyboardListener, Node, type NodeOptions, Path } from "scenerystack/scenery";
+import { Circle, DragListener, KeyboardDragListener, Node, type NodeOptions, Path } from "scenerystack/scenery";
 import { ArrowNode } from "scenerystack/scenery-phet";
 import CrystalLatticeColors from "../../CrystalLatticeColors.js";
 import { DEFAULT_LATTICE_VECTOR_NM, LATTICE_2D_RANGE, OUTLINE_LINE_WIDTH } from "../../CrystalLatticeConstants.js";
@@ -48,14 +48,10 @@ const ORIGIN_RADIUS = 9;
 /** Radius of a draggable vector handle, sized for a comfortable touch target. */
 const HANDLE_RADIUS = 11;
 
-/** Keyboard step for |a₁| / |a₂|, in nanometres. */
-const VECTOR_KEY_STEP_NM = 0.01;
+/** View-pixel step for a vector tip under the arrow keys. Shift uses a quarter of this. */
+const KEYBOARD_DRAG_DELTA_PX = 8;
 
-/** Keyboard step for γ, in degrees. */
-const GAMMA_KEY_STEP_DEG = 1;
-
-/** View-pixel nudge applied to a₂'s tip under the arrow keys. */
-const A2_KEY_STEP_PX = 8;
+const KEYBOARD_SHIFT_DRAG_DELTA_PX = KEYBOARD_DRAG_DELTA_PX / 4;
 
 export type Lattice2DNodeOptions = NodeOptions;
 
@@ -287,25 +283,13 @@ export class Lattice2DNode extends Node {
       }),
     );
 
+    // Same model write as the pointer drag. Arrows are not also bound by a KeyboardListener.
     handle.addInputListener(
-      new KeyboardListener({
-        keys: ["arrowLeft", "arrowRight", "arrowUp", "arrowDown"],
-        fire: (_event, keysPressed) => {
-          if (isFirstVector) {
-            const delta =
-              keysPressed === "arrowRight" || keysPressed === "arrowUp" ? VECTOR_KEY_STEP_NM : -VECTOR_KEY_STEP_NM;
-            this.model.a1Property.value = LATTICE_VECTOR_RANGE.constrainValue(this.model.a1Property.value + delta);
-          } else if (keysPressed === "arrowLeft" || keysPressed === "arrowRight") {
-            // Horizontal keys change γ around the origin; vertical keys change |a₂|.
-            const delta = keysPressed === "arrowRight" ? GAMMA_KEY_STEP_DEG : -GAMMA_KEY_STEP_DEG;
-            this.model.gammaDegreesProperty.value = GAMMA_RANGE.constrainValue(
-              this.model.gammaDegreesProperty.value + delta,
-            );
-          } else {
-            const tip = this.handleA2.center.copy();
-            tip.y += keysPressed === "arrowDown" ? A2_KEY_STEP_PX : -A2_KEY_STEP_PX;
-            this.applyTipFromView(tip, false);
-          }
+      new KeyboardDragListener({
+        dragDelta: KEYBOARD_DRAG_DELTA_PX,
+        shiftDragDelta: KEYBOARD_SHIFT_DRAG_DELTA_PX,
+        drag: (_event, listener) => {
+          this.applyTipFromView(handle.center.plus(listener.modelDelta), isFirstVector);
         },
       }),
     );

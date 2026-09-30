@@ -147,7 +147,11 @@ export class CubicCellNode extends Projected3DNode {
       });
 
       if (showSharing) {
-        const wedge = createSharingWedge(viewRadius, atom.sharingFraction, "rgba(255,255,255,0.55)");
+        const wedge = createSharingWedge(
+          viewRadius,
+          atom.sharingFraction,
+          CrystalLatticeColors.sharingWedgeColorProperty,
+        );
         wedge.center = view;
         nodes.push(new Node({ children: [sphere, wedge] }), this.createFractionLabel(atom.sharingFraction, view));
       } else {
@@ -162,10 +166,10 @@ export class CubicCellNode extends Projected3DNode {
     const text = fraction === 1 ? "1" : `1/${Math.round(1 / fraction)}`;
     return new Node({
       children: [
-        new Circle(11, { center: view, fill: "rgba(0,0,0,0.65)" }),
+        new Circle(11, { center: view, fill: CrystalLatticeColors.sharingBadgeColorProperty }),
         new Text(text, {
           font: new PhetFont({ size: READOUT_FONT_SIZE - 2, weight: "bold" }),
-          fill: "#ffffff",
+          fill: CrystalLatticeColors.sharingLabelColorProperty,
           center: view,
         }),
       ],
