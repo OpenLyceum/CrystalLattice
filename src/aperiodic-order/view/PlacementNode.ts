@@ -263,9 +263,10 @@ export class PlacementNode extends Node {
     this.multilink.dispose();
     this.disposePalette();
 
-    // Node.dispose() only detaches descendants. The tiles, slots and palette are
-    // filled from the shared color profile and their listeners close over this
-    // node, so they must be disposed too or the profile keeps the board alive.
+    // Node.dispose() only detaches descendants. The slots and palette tiles link
+    // to the shared accessible-name string Properties, and their input listeners
+    // close over this node, so they must be disposed too or those strings keep
+    // the board alive.
     for (const layer of [this.tileLayer, this.slotLayer, this.paletteLayer, this.ghostLayer]) {
       layer.disposeSubtree();
     }
