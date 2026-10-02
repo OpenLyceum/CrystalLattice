@@ -270,7 +270,6 @@ describe("building a rhombus from scratch", () => {
     for (const type of [RhombusType.THIN, RhombusType.THICK] as const) {
       const rhombus = rhombusAt(type, new Vector2(0.3, -0.2), 0.7);
       for (let index = 0; index < 4; index++) {
-        // biome-ignore lint/style/noNonNullAssertion: a rhombus has four vertices
         expect(rhombus.vertices[index]!.distance(rhombus.vertices[(index + 1) % 4]!)).toBeCloseTo(1, 10);
       }
       // Even indices are the apexes, which is what cornerAngleUnits assumes.
@@ -284,7 +283,6 @@ describe("building a rhombus from scratch", () => {
   it("winds counter-clockwise, so the corner bearings walk the vertex the right way", () => {
     const corners = cornersAtVertex([rhombusAt(RhombusType.THICK, Vector2.ZERO, 0)], Vector2.ZERO);
     expect(corners.length).toBe(1);
-    // biome-ignore lint/style/noNonNullAssertion: guarded by the length check
     expect(corners[0]!.angle).toBe(apexAngleUnits(RhombusType.THICK));
   });
 
@@ -334,16 +332,13 @@ describe("arcs around a vertex", () => {
 
   it("splits a partly-filled vertex where the empty wedge is", () => {
     const seed = placementSeed();
-    // biome-ignore lint/style/noNonNullAssertion: a rhombus has four vertices
     const arcs = vertexArcs(cornersAtVertex([seed], seed.vertices[0]!));
     expect(arcs.length).toBe(1);
-    // biome-ignore lint/style/noNonNullAssertion: guarded by the length check
     expect(arcs[0]!.length).toBe(1);
   });
 
   it("keeps two corners in one arc when they abut, and two when they do not", () => {
     const seed = placementSeed();
-    // biome-ignore lint/style/noNonNullAssertion: a rhombus has four vertices
     const shared = seed.vertices[1]!;
     const neighbour = candidatePlacements([seed]).find((candidate) =>
       candidate.rhombus.vertices.some((vertex) => vertex.distance(shared) < 1e-6),
@@ -393,7 +388,6 @@ describe("hand placement", () => {
       if (legal.length === 0) {
         break;
       }
-      // biome-ignore lint/style/noNonNullAssertion: guarded by the length check
       patch = [...patch, legal[0]!.rhombus];
     }
     expect(patch.length).toBeGreaterThan(5);
@@ -420,7 +414,6 @@ describe("hand placement", () => {
   it("offers the hole left by a removed tile back as a legal candidate", () => {
     const rhombi = mergeIntoRhombi(generatePenroseTiling(4));
     const interior = rhombi.filter((rhombus) => rhombusCentre(rhombus).magnitude < 0.3);
-    // biome-ignore lint/style/noNonNullAssertion: an inflated patch has interior tiles
     const tile = interior[0]!;
     const rest = rhombi.filter((rhombus) => rhombus !== tile);
 

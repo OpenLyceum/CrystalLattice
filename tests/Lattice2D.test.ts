@@ -189,9 +189,7 @@ describe("Wigner–Seitz cell", () => {
 function polygonArea(vertices: ReadonlyArray<{ x: number; y: number }>): number {
   let sum = 0;
   for (let i = 0; i < vertices.length; i++) {
-    // biome-ignore lint/style/noNonNullAssertion: index is bounded by the loop
     const current = vertices[i]!;
-    // biome-ignore lint/style/noNonNullAssertion: modular index stays in range
     const next = vertices[(i + 1) % vertices.length]!;
     sum += current.x * next.y - next.x * current.y;
   }

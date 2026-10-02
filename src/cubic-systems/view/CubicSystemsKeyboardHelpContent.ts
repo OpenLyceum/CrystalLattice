@@ -7,16 +7,22 @@
 
 import {
   BasicActionsKeyboardHelpSection,
+  ComboBoxKeyboardHelpSection,
   MoveDraggableItemsKeyboardHelpSection,
   SliderControlsKeyboardHelpSection,
   TwoColumnKeyboardHelpContent,
 } from "scenerystack/scenery-phet";
+import { createView3DKeyboardHelpSection } from "../../common/view/CrystalLatticeKeyboardHelpSections.js";
 
 export class CubicSystemsKeyboardHelpContent extends TwoColumnKeyboardHelpContent {
   public constructor() {
     super(
-      [new MoveDraggableItemsKeyboardHelpSection(), new SliderControlsKeyboardHelpSection()],
-      [new BasicActionsKeyboardHelpSection({ withCheckboxContent: true })],
+      [
+        createView3DKeyboardHelpSection(),
+        new MoveDraggableItemsKeyboardHelpSection(),
+        new SliderControlsKeyboardHelpSection(),
+      ],
+      [new ComboBoxKeyboardHelpSection(), new BasicActionsKeyboardHelpSection({ withCheckboxContent: true })],
     );
   }
 }

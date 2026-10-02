@@ -69,6 +69,9 @@ export class PlacementNode extends Node {
 
   private readonly multilink: UnknownMultilink;
 
+  /** Unlinks the palette tiles' pressed state from the model. */
+  private readonly disposePalette: () => void;
+
   public constructor(model: AperiodicOrderModel, viewSize: number, providedOptions?: PlacementNodeOptions) {
     super(providedOptions);
     this.model = model;
@@ -79,7 +82,7 @@ export class PlacementNode extends Node {
     // and naming the layer keeps the traversal order stable across that. Palette
     // first, because choosing a shape comes before choosing where to put it.
     this.pdomOrder = [this.paletteLayer, this.slotLayer];
-    this.buildPalette(viewSize);
+    this.disposePalette = this.buildPalette(viewSize);
 
     this.multilink = Multilink.multilink([model.placedRhombiProperty, model.candidatesProperty], () => this.rebuild());
   }
@@ -128,10 +131,18 @@ export class PlacementNode extends Node {
    * inset: the two rhombi have very different widths, and a fixed inset either
    * clips the wide one or strands the narrow one.
    */
-  private buildPalette(viewSize: number): void {
+  private buildPalette(viewSize: number): () => void {
     const strings = StringManager.getInstance().getAperiodicOrderA11yStrings();
     const thick = this.createPaletteTile(RhombusType.THICK, strings.controls.paletteThickStringProperty);
     const thin = this.createPaletteTile(RhombusType.THIN, strings.controls.paletteThinStringProperty);
+
+    // Each tile is a toggle button: aria-pressed tells a screen-reader user
+    // which shape the slot buttons will place.
+    const updatePressed = (selected: RhombusType): void => {
+      thick.setPDOMAttribute("aria-pressed", selected === RhombusType.THICK);
+      thin.setPDOMAttribute("aria-pressed", selected === RhombusType.THIN);
+    };
+    this.model.selectedTileProperty.link(updatePressed);
     this.paletteLayer.children = [thick, thin];
 
     const bottom = viewSize / 2 - PALETTE_MARGIN;
@@ -140,6 +151,8 @@ export class PlacementNode extends Node {
     thick.bottom = bottom;
     thin.left = thick.right + PALETTE_MARGIN;
     thin.bottom = bottom;
+
+    return () => this.model.selectedTileProperty.unlink(updatePressed);
   }
 
   /**
@@ -179,6 +192,16 @@ export class PlacementNode extends Node {
           if (event !== null) {
             this.dropAt(this.globalToLocalPoint(event.pointer.point), type);
           }
+        },
+      }),
+    );
+
+    // Enter or Space (and a click) arm this shape without a drag, so the tile is
+    // a working control from the keyboard rather than a dead tab stop.
+    tile.addInputListener(
+      new FireListener({
+        fire: () => {
+          this.model.selectedTileProperty.value = type;
         },
       }),
     );
@@ -238,6 +261,14 @@ export class PlacementNode extends Node {
 
   public override dispose(): void {
     this.multilink.dispose();
+    this.disposePalette();
+
+    // Node.dispose() only detaches descendants. The tiles, slots and palette are
+    // filled from the shared color profile and their listeners close over this
+    // node, so they must be disposed too or the profile keeps the board alive.
+    for (const layer of [this.tileLayer, this.slotLayer, this.paletteLayer, this.ghostLayer]) {
+      layer.disposeSubtree();
+    }
     super.dispose();
   }
 }

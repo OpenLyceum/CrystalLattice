@@ -48,6 +48,13 @@ const ORIGIN_RADIUS = 9;
 /** Radius of a draggable vector handle, sized for a comfortable touch target. */
 const HANDLE_RADIUS = 11;
 
+/**
+ * How far a handle's touch and mouse areas extend past its drawn edge, px. The
+ * drawn circle is small; the larger target makes it easy to grab by touch.
+ */
+const HANDLE_TOUCH_DILATION = 10;
+const HANDLE_MOUSE_DILATION = 4;
+
 /** View-pixel step for a vector tip under the arrow keys. Shift uses a quarter of this. */
 const KEYBOARD_DRAG_DELTA_PX = 8;
 
@@ -273,6 +280,8 @@ export class Lattice2DNode extends Node {
       tagName: "div",
       focusable: true,
     });
+    handle.touchArea = handle.localBounds.dilated(HANDLE_TOUCH_DILATION);
+    handle.mouseArea = handle.localBounds.dilated(HANDLE_MOUSE_DILATION);
 
     handle.addInputListener(
       new DragListener({

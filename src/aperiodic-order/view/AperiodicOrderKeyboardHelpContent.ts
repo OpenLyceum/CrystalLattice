@@ -10,9 +10,13 @@
  */
 
 import { BasicActionsKeyboardHelpSection, TwoColumnKeyboardHelpContent } from "scenerystack/scenery-phet";
+import { createPlaceTilesKeyboardHelpSection } from "../../common/view/CrystalLatticeKeyboardHelpSections.js";
 
 export class AperiodicOrderKeyboardHelpContent extends TwoColumnKeyboardHelpContent {
   public constructor() {
-    super([new BasicActionsKeyboardHelpSection({ withCheckboxContent: true })], []);
+    super(
+      [createPlaceTilesKeyboardHelpSection()],
+      [new BasicActionsKeyboardHelpSection({ withCheckboxContent: true })],
+    );
   }
 }

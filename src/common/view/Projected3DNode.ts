@@ -19,6 +19,7 @@
 import { Property, type TReadOnlyProperty } from "scenerystack/axon";
 import type { Vector3 } from "scenerystack/dot";
 import { DragListener, KeyboardListener, Node, type NodeOptions } from "scenerystack/scenery";
+import CrystalLatticeHotkeyData from "../CrystalLatticeHotkeyData.js";
 import { DEFAULT_PITCH, DEFAULT_YAW, Projection3D } from "../model/Projection3D.js";
 
 /** Pointer-drag pixels of orbit per arrow-key press (matches a short flick). */
@@ -77,7 +78,7 @@ export abstract class Projected3DNode extends Node {
     // tagName/focusable/accessibleName) must be operable without a pointer.
     this.addInputListener(
       new KeyboardListener({
-        keys: ["arrowLeft", "arrowRight", "arrowUp", "arrowDown"],
+        keyStringProperties: CrystalLatticeHotkeyData.ROTATE_VIEW.keyStringProperties,
         fire: (_event, keysPressed) => {
           const dx =
             keysPressed === "arrowLeft" ? -ORBIT_KEY_DELTA : keysPressed === "arrowRight" ? ORBIT_KEY_DELTA : 0;

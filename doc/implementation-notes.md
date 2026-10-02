@@ -153,6 +153,15 @@ Every screen ships the three required layers:
 Draggable plain Nodes (the 2D vector handles, the rotatable cells) also carry `tagName: "div"` and
 `focusable: true`, without which they are unreachable by keyboard.
 
+## Object lifetime
+
+Screen models and screen views are created once and live as long as the sim, so their links and
+`DerivedProperty`s are never unlinked. Nodes rebuilt at runtime are released with `replaceChildren`
+(which calls `disposeSubtree`), and the nodes with a `dispose()` (`AtomNode`, `Projected3DNode`,
+`PlacementNode`) unlink everything they attached to longer-lived Properties.
+`tests/memory-leak.test.ts` checks the five screen models plus `AtomNode` and `PlacementNode`, the
+latter against a shared model so a missed unlink fails the test.
+
 ## Deviations from the original spec
 
 - The spec sketched a `js/` tree with `*Model.ts` files under `common/model/`. This uses the fleet's

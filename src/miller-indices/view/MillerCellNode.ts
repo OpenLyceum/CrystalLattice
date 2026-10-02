@@ -42,6 +42,7 @@ import {
   PARALLEL_INTERCEPT_POSITION,
   READOUT_FONT_SIZE,
 } from "../../CrystalLatticeConstants.js";
+import CrystalLatticeHotkeyData from "../../common/CrystalLatticeHotkeyData.js";
 import { cellCorners, cellEdgeIndices } from "../../common/model/CubicCell.js";
 import type { IndexTriple } from "../../common/model/MillerIndices.js";
 import { planePolygonInCell } from "../../common/model/MillerIndices.js";
@@ -53,6 +54,13 @@ import { type MillerIndicesModel, MillerMode } from "../model/MillerIndicesModel
 
 /** Radius of a draggable handle in view pixels, sized for a comfortable touch target. */
 const HANDLE_RADIUS = 9;
+
+/**
+ * How far a handle's touch and mouse areas extend past its drawn edge, px. The
+ * drawn circle is small; the larger target makes it easy to grab by touch.
+ */
+const HANDLE_TOUCH_DILATION = 10;
+const HANDLE_MOUSE_DILATION = 4;
 
 /** Half-length of a tick mark drawn across an intercept track, in view pixels. */
 const TICK_HALF_LENGTH = 5;
@@ -225,6 +233,8 @@ export class MillerCellNode extends Projected3DNode {
       tagName: "div",
       focusable: true,
     });
+    handle.touchArea = handle.localBounds.dilated(HANDLE_TOUCH_DILATION);
+    handle.mouseArea = handle.localBounds.dilated(HANDLE_MOUSE_DILATION);
 
     handle.addInputListener(
       new DragListener({
@@ -242,7 +252,10 @@ export class MillerCellNode extends Projected3DNode {
     // depends entirely on where the student has orbited the cell to.
     handle.addInputListener(
       new KeyboardListener({
-        keys: ["arrowRight", "arrowUp", "arrowLeft", "arrowDown", "home", "end"],
+        keyStringProperties: [
+          ...CrystalLatticeHotkeyData.STEP_INTERCEPT.keyStringProperties,
+          ...CrystalLatticeHotkeyData.INTERCEPT_ENDS.keyStringProperties,
+        ],
         fire: (_event, keysPressed) => this.stepIntercept(axis, keysPressed),
       }),
     );
@@ -306,6 +319,8 @@ export class MillerCellNode extends Projected3DNode {
       tagName: "div",
       focusable: true,
     });
+    handle.touchArea = handle.localBounds.dilated(HANDLE_TOUCH_DILATION);
+    handle.mouseArea = handle.localBounds.dilated(HANDLE_MOUSE_DILATION);
 
     handle.addInputListener(
       new DragListener({
@@ -316,7 +331,7 @@ export class MillerCellNode extends Projected3DNode {
 
     handle.addInputListener(
       new KeyboardListener({
-        keys: ["arrowRight", "arrowLeft", "arrowUp", "arrowDown"],
+        keyStringProperties: CrystalLatticeHotkeyData.MOVE_DIRECTION_TIP.keyStringProperties,
         fire: (_event, keysPressed) => this.nudgeDirection(keysPressed),
       }),
     );

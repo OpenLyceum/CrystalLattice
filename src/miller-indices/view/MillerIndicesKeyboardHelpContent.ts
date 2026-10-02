@@ -9,16 +9,16 @@
  * preset buttons and toggling the overlay check boxes.
  */
 
+import { BasicActionsKeyboardHelpSection, TwoColumnKeyboardHelpContent } from "scenerystack/scenery-phet";
 import {
-  BasicActionsKeyboardHelpSection,
-  MoveDraggableItemsKeyboardHelpSection,
-  TwoColumnKeyboardHelpContent,
-} from "scenerystack/scenery-phet";
+  createMillerKeyboardHelpSection,
+  createView3DKeyboardHelpSection,
+} from "../../common/view/CrystalLatticeKeyboardHelpSections.js";
 
 export class MillerIndicesKeyboardHelpContent extends TwoColumnKeyboardHelpContent {
   public constructor() {
     super(
-      [new MoveDraggableItemsKeyboardHelpSection()],
+      [createView3DKeyboardHelpSection(), createMillerKeyboardHelpSection()],
       [new BasicActionsKeyboardHelpSection({ withCheckboxContent: true })],
     );
   }

@@ -13,11 +13,13 @@
 
 import { describe, expect, it } from "vitest";
 import { AperiodicOrderModel } from "../src/aperiodic-order/model/AperiodicOrderModel.js";
+import { PlacementNode } from "../src/aperiodic-order/view/PlacementNode.js";
 import { ClosePackingModel } from "../src/close-packing/model/ClosePackingModel.js";
+import { AtomNode } from "../src/common/view/AtomNode.js";
 import { CubicSystemsModel } from "../src/cubic-systems/model/CubicSystemsModel.js";
 import { Lattices2DModel } from "../src/lattices-2d/model/Lattices2DModel.js";
 import { MillerIndicesModel } from "../src/miller-indices/model/MillerIndicesModel.js";
-import { forceGC } from "./helpers/memoryLeak.js";
+import { describeDisposalLeaks, forceGC } from "./helpers/memoryLeak.js";
 
 /** The five screen models, each with a factory that exercises it before release. */
 const MODEL_FACTORIES: ReadonlyArray<{ name: string; create: () => { reset: () => void } }> = [
@@ -68,3 +70,15 @@ describe("Memory leak regression", () => {
     }
   });
 });
+
+// View nodes that link to longer-lived Properties. The board shares one model,
+// so a PlacementNode is only collected if dispose() unlinks it from that model;
+// AtomNode links to the shared color profile.
+const SHARED_APERIODIC_MODEL = new AperiodicOrderModel();
+const PLACEMENT_BOARD_SIZE = 400;
+const ATOM_RADIUS = 10;
+
+describeDisposalLeaks([
+  { name: "AtomNode", create: () => new AtomNode(ATOM_RADIUS) },
+  { name: "PlacementNode", create: () => new PlacementNode(SHARED_APERIODIC_MODEL, PLACEMENT_BOARD_SIZE) },
+]);

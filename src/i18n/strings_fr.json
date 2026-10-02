@@ -23,7 +23,18 @@
     "valueNm": "{{value}} nm",
     "valueNmSquared": "{{value}} nm²",
     "valuePerNmSquared": "{{value}} /nm²",
-    "valueGPerCm3": "{{value}} g/cm³"
+    "valueGPerCm3": "{{value}} g/cm³",
+    "keyboardHelp": {
+      "view3DHeading": "Vue 3D",
+      "rotateView": "Faire pivoter la vue",
+      "interceptHeading": "Intersections du plan",
+      "stepIntercept": "Déplacer une intersection d'un cran",
+      "interceptEnds": "Aller à une extrémité de l'axe",
+      "moveDirectionTip": "Déplacer la pointe de la direction",
+      "placeTilesHeading": "Poser des tuiles",
+      "chooseTile": "Choisir une forme de tuile",
+      "placeTile": "Poser une tuile dans un emplacement"
+    }
   },
   "lattices2D": {
     "vectorA1": "|a₁|",

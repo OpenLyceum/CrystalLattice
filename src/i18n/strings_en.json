@@ -23,7 +23,18 @@
     "valueNm": "{{value}} nm",
     "valueNmSquared": "{{value}} nm²",
     "valuePerNmSquared": "{{value}} /nm²",
-    "valueGPerCm3": "{{value}} g/cm³"
+    "valueGPerCm3": "{{value}} g/cm³",
+    "keyboardHelp": {
+      "view3DHeading": "3D View",
+      "rotateView": "Rotate the view",
+      "interceptHeading": "Plane Intercepts",
+      "stepIntercept": "Move an intercept one step",
+      "interceptEnds": "Jump to either end of the track",
+      "moveDirectionTip": "Move the direction tip",
+      "placeTilesHeading": "Place Tiles",
+      "chooseTile": "Choose a tile shape",
+      "placeTile": "Place a tile in a slot"
+    }
   },
   "lattices2D": {
     "vectorA1": "|a₁|",
