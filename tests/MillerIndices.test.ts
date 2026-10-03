@@ -294,3 +294,20 @@ describe("the intercept handle's track", () => {
     expect(interplanarSpacing([2, 0, 0], 1)).toBeCloseTo(interplanarSpacing([1, 0, 0], 1) / 2, 10);
   });
 });
+
+describe("2026-10-03 review fixes", () => {
+  it("draws (11̄0) as a full rectangle through its negative intercept", () => {
+    // The plane x − y = a, clipped to y ∈ [−a, a]: from (0, −a, z) to (a, 0, z).
+    const polygon = planePolygonInCell([1, -1, 0], 1);
+    expect(polygon).toHaveLength(4);
+    expect(polygon.some((vertex) => Math.abs(vertex.x) < 1e-9 && Math.abs(vertex.y + 1) < 1e-9)).toBe(true);
+  });
+
+  it("draws (0̄10) at y = −a instead of dropping it", () => {
+    const polygon = planePolygonInCell([0, -1, 0], 1);
+    expect(polygon).toHaveLength(4);
+    for (const vertex of polygon) {
+      expect(vertex.y).toBeCloseTo(-1, 9);
+    }
+  });
+});

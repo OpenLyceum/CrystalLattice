@@ -352,9 +352,13 @@ function parseSingleIndex(token: string): number | null {
 }
 
 /**
- * The polygon where the plane (hkl) cuts the unit cube [0, a]³ — the outline
- * the screen actually draws. Returns the vertices in convex-hull order around
- * the plane normal, or an empty array when the plane misses the cell.
+ * The polygon where the plane (hkl) cuts the unit cube [0, a]³, extended along
+ * any axis with a negative intercept to reach that intercept — the outline the
+ * screen actually draws. A negative index puts its intercept at −a/|h|, on the
+ * negative axis the view draws, so clipping to the bare cube would collapse
+ * (1̄10) to an edge and lose (0̄10) entirely. Returns the vertices in
+ * convex-hull order around the plane normal, or an empty array when the plane
+ * misses the box.
  *
  * @param indices - the Miller indices
  * @param latticeConstant - cube edge length in model units
@@ -373,7 +377,12 @@ export function planePolygonInCell(indices: IndexTriple, latticeConstant: number
   const constant = offset * latticeConstant;
   const points: Vector3[] = [];
 
-  for (const [start, end] of cubeEdges(latticeConstant)) {
+  // Per axis: the cell edge, stretched to include a negative intercept c/index.
+  const lowerBound = (index: number): number => (index < 0 ? Math.min(0, constant / index) : 0);
+  const minimum = new Vector3(lowerBound(h), lowerBound(k), lowerBound(l));
+  const maximum = new Vector3(latticeConstant, latticeConstant, latticeConstant);
+
+  for (const [start, end] of boxEdges(minimum, maximum)) {
     const crossing = segmentPlaneCrossing(start, end, normal, constant);
     if (crossing !== null) {
       points.push(crossing);
@@ -383,13 +392,13 @@ export function planePolygonInCell(indices: IndexTriple, latticeConstant: number
   return sortAroundNormal(deduplicate(points), normal);
 }
 
-/** The twelve edges of the cube [0, a]³, as endpoint pairs in model units. */
-function cubeEdges(latticeConstant: number): Array<readonly [Vector3, Vector3]> {
+/** The twelve edges of the axis-aligned box [minimum, maximum], as endpoint pairs in model units. */
+function boxEdges(minimum: Vector3, maximum: Vector3): Array<readonly [Vector3, Vector3]> {
   const corners: Vector3[] = [];
-  for (const x of [0, 1]) {
-    for (const y of [0, 1]) {
-      for (const z of [0, 1]) {
-        corners.push(new Vector3(x, y, z).timesScalar(latticeConstant));
+  for (const x of [minimum.x, maximum.x]) {
+    for (const y of [minimum.y, maximum.y]) {
+      for (const z of [minimum.z, maximum.z]) {
+        corners.push(new Vector3(x, y, z));
       }
     }
   }

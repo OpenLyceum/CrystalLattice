@@ -77,7 +77,19 @@
     "computedDensity": "Masse volumique calculée",
     "measuredDensity": "Masse volumique mesurée",
     "overlapWarning": "Les sphères se recouvrent : ce n'est plus un modèle de sphères dures",
-    "noMatch": "Aucune correspondance tabulée"
+    "noMatch": "Aucune correspondance tabulée",
+    "elementNames": {
+      "Po": "Polonium",
+      "Fe": "Fer",
+      "Cr": "Chrome",
+      "W": "Tungstène",
+      "Al": "Aluminium",
+      "Ni": "Nickel",
+      "Cu": "Cuivre",
+      "Ag": "Argent",
+      "Au": "Or",
+      "Pb": "Plomb"
+    }
   },
   "closePacking": {
     "layerCount": "Couches",
@@ -109,7 +121,7 @@
     "stepIntercepts": "1. Intersections",
     "stepReciprocals": "2. Inverses",
     "stepCleared": "3. Ramenés à des entiers",
-    "stepReduced": "4. Réduits",
+    "stepReduced": "4. Indices de Miller",
     "interplanarSpacing": "Distance interréticulaire d",
     "planarDensity": "Densité planaire",
     "family": "Famille équivalente",

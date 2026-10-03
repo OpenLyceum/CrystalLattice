@@ -237,7 +237,9 @@ export class AperiodicOrderScreenView extends ScreenView {
       orientationsCheckbox.visible = mode === TilingMode.PENROSE;
       metatilesCheckbox.visible = mode === TilingMode.EINSTEIN;
       reflectedCheckbox.visible = mode === TilingMode.EINSTEIN;
-      substitutionRow.visible = mode !== TilingMode.PLACEMENT;
+      // A periodic lattice has no substitution rule, so Inflate/Deflate would only
+      // change the hidden Penrose step count there.
+      substitutionRow.visible = mode === TilingMode.PENROSE || mode === TilingMode.EINSTEIN;
       placementRow.visible = mode === TilingMode.PLACEMENT;
     });
 

@@ -195,3 +195,35 @@ function polygonArea(vertices: ReadonlyArray<{ x: number; y: number }>): number 
   }
   return Math.abs(sum) / 2;
 }
+
+describe("centred basis and skewed cells (2026-10-03 review)", () => {
+  const CENTERED_RECT: Lattice2DParameters = { a1: 0.3, a2: 0.45, gamma: degrees(90), centered: true };
+
+  it("counts the centre atoms as nearest neighbours", () => {
+    const shell = firstCoordinationShell(CENTERED_RECT);
+    expect(shell.distance).toBeCloseTo(Math.hypot(0.15, 0.225), 9);
+    expect(shell.count).toBe(4);
+  });
+
+  it("packs two discs per centred cell", () => {
+    const radius = Math.hypot(0.15, 0.225) / 2;
+    expect(arealPackingFraction(CENTERED_RECT)).toBeCloseTo((2 * Math.PI * radius * radius) / (0.3 * 0.45), 9);
+  });
+
+  it("halves the Wigner–Seitz cell for a centred basis", () => {
+    expect(polygonArea(wignerSeitzCell(CENTERED_RECT))).toBeCloseTo((0.3 * 0.45) / 2, 9);
+  });
+
+  it("builds a Wigner–Seitz cell of the primitive area for a strongly skewed cell", () => {
+    const skewed: Lattice2DParameters = { a1: 0.5, a2: 0.15, gamma: degrees(30) };
+    expect(polygonArea(wignerSeitzCell(skewed))).toBeCloseTo(cellArea(skewed), 9);
+  });
+
+  it("classifies a centred hexagonal cell as the rectangular lattice it draws", () => {
+    expect(classifyLattice({ a1: 1, a2: 1, gamma: degrees(60), centered: true })).toBe(Lattice2DType.RECTANGULAR);
+  });
+
+  it("keeps a centred square a square lattice", () => {
+    expect(classifyLattice({ ...SQUARE, centered: true })).toBe(Lattice2DType.SQUARE);
+  });
+});

@@ -10,7 +10,13 @@
  * paper is on screen next to the picture it comes from.
  */
 
-import { DerivedProperty, PatternStringProperty, Property, StringProperty } from "scenerystack/axon";
+import {
+  DerivedProperty,
+  PatternStringProperty,
+  Property,
+  StringProperty,
+  type TReadOnlyProperty,
+} from "scenerystack/axon";
 import { toFixed } from "scenerystack/dot";
 import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
 import { Node, Rectangle, VBox } from "scenerystack/scenery";
@@ -137,6 +143,16 @@ export class CubicSystemsScreenView extends ScreenView {
       elementProperty.value = element;
     });
 
+    // Symbols come from elements.json, so look the localized name up by key and
+    // fall back to the English name for any element without a translation.
+    const elementNames: Partial<Record<string, TReadOnlyProperty<string>>> = screenStrings.elementNames;
+    const elementLabelProperty = (element: ReferenceElement): TReadOnlyProperty<string> => {
+      const nameProperty = elementNames[`${element.symbol}StringProperty`];
+      return nameProperty
+        ? new DerivedProperty([nameProperty], (name) => `${element.symbol} — ${name}`)
+        : new StringProperty(`${element.symbol} — ${element.name}`);
+    };
+
     const elementComboBox = createComboBox(
       elementProperty,
       [
@@ -145,9 +161,8 @@ export class CubicSystemsScreenView extends ScreenView {
         { value: null as ReferenceElement | null, label: commonStrings.noneStringProperty },
         ...model.referenceElements.map((element) => ({
           value: element as ReferenceElement | null,
-          // Chemical symbols and element names are not translated, so a plain
-          // StringProperty is right here rather than a locale-driven one.
-          label: new StringProperty(`${element.symbol} — ${element.name}`),
+          // The symbol is universal; the name follows the locale.
+          label: elementLabelProperty(element),
         })),
       ],
       comboBoxParent,

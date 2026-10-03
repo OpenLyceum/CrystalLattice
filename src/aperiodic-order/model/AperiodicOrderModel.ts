@@ -258,7 +258,11 @@ export class AperiodicOrderModel implements TModel {
 
   /** Applies one more substitution step to whichever tiling is on screen. */
   public inflate(): void {
-    if (this.modeProperty.value === TilingMode.EINSTEIN) {
+    const mode = this.modeProperty.value;
+    if (mode === TilingMode.PERIODIC || mode === TilingMode.PLACEMENT) {
+      return; // no substitution rule in these modes
+    }
+    if (mode === TilingMode.EINSTEIN) {
       this.hatStepsProperty.value = HAT_STEPS_RANGE.constrainValue(this.hatStepsProperty.value + 1);
     } else {
       this.inflationStepsProperty.value = INFLATION_RANGE.constrainValue(this.inflationStepsProperty.value + 1);
@@ -267,7 +271,11 @@ export class AperiodicOrderModel implements TModel {
 
   /** Steps back to the previous, coarser tiling. */
   public deflate(): void {
-    if (this.modeProperty.value === TilingMode.EINSTEIN) {
+    const mode = this.modeProperty.value;
+    if (mode === TilingMode.PERIODIC || mode === TilingMode.PLACEMENT) {
+      return; // no substitution rule in these modes
+    }
+    if (mode === TilingMode.EINSTEIN) {
       this.hatStepsProperty.value = HAT_STEPS_RANGE.constrainValue(this.hatStepsProperty.value - 1);
     } else {
       this.inflationStepsProperty.value = INFLATION_RANGE.constrainValue(this.inflationStepsProperty.value - 1);

@@ -77,7 +77,19 @@
     "computedDensity": "Densidad calculada",
     "measuredDensity": "Densidad medida",
     "overlapWarning": "Las esferas se solapan: ya no es un modelo de esferas rígidas",
-    "noMatch": "Sin coincidencia en la tabla"
+    "noMatch": "Sin coincidencia en la tabla",
+    "elementNames": {
+      "Po": "Polonio",
+      "Fe": "Hierro",
+      "Cr": "Cromo",
+      "W": "Wolframio",
+      "Al": "Aluminio",
+      "Ni": "Níquel",
+      "Cu": "Cobre",
+      "Ag": "Plata",
+      "Au": "Oro",
+      "Pb": "Plomo"
+    }
   },
   "closePacking": {
     "layerCount": "Capas",
@@ -109,7 +121,7 @@
     "stepIntercepts": "1. Intersecciones",
     "stepReciprocals": "2. Recíprocos",
     "stepCleared": "3. Convertidos a enteros",
-    "stepReduced": "4. Reducidos",
+    "stepReduced": "4. Índices de Miller",
     "interplanarSpacing": "Distancia interplanar d",
     "planarDensity": "Densidad planar",
     "family": "Familia equivalente",

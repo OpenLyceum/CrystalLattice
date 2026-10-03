@@ -105,7 +105,16 @@ export class MillerIndicesModel implements TModel {
     this.showFamilyProperty = new BooleanProperty(false);
 
     this.interceptsProperty = new DerivedProperty([this.planeIndicesProperty], interceptsFromIndices);
-    this.derivationProperty = new DerivedProperty([this.interceptsProperty], derivePlaneIndices);
+    // The derivation ends on the plane actually selected. A drag always lands on
+    // a reduced triple, but a preset or typed (200) keeps its common factor, and
+    // the panel must not "reduce" it to (100) beside a readout that says (200).
+    this.derivationProperty = new DerivedProperty(
+      [this.interceptsProperty, this.planeIndicesProperty],
+      (intercepts, indices) => ({
+        ...derivePlaneIndices(intercepts),
+        indices,
+      }),
+    );
 
     this.spacingProperty = new DerivedProperty([this.planeIndicesProperty], (indices) =>
       interplanarSpacing(indices, this.edgeLength),

@@ -13,7 +13,7 @@ import elementsData from "./elements.json";
 export type ReferenceElement = {
   /** Chemical symbol, e.g. "Fe". */
   readonly symbol: string;
-  /** English element name; localized labels are not used for chemical names. */
+  /** English element name; the view shows the localized `cubicSystems.elementNames` entry instead. */
   readonly name: string;
   /** Which cubic structure it crystallizes in at room temperature. */
   readonly structure: CubicStructure;

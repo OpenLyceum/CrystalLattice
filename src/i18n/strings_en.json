@@ -77,7 +77,19 @@
     "computedDensity": "Computed density",
     "measuredDensity": "Measured density",
     "overlapWarning": "Spheres overlap — no longer a hard-sphere model",
-    "noMatch": "No tabulated match"
+    "noMatch": "No tabulated match",
+    "elementNames": {
+      "Po": "Polonium",
+      "Fe": "Iron",
+      "Cr": "Chromium",
+      "W": "Tungsten",
+      "Al": "Aluminium",
+      "Ni": "Nickel",
+      "Cu": "Copper",
+      "Ag": "Silver",
+      "Au": "Gold",
+      "Pb": "Lead"
+    }
   },
   "closePacking": {
     "layerCount": "Layers",
@@ -109,7 +121,7 @@
     "stepIntercepts": "1. Intercepts",
     "stepReciprocals": "2. Reciprocals",
     "stepCleared": "3. Cleared to integers",
-    "stepReduced": "4. Reduced",
+    "stepReduced": "4. Miller indices",
     "interplanarSpacing": "Interplanar spacing d",
     "planarDensity": "Planar density",
     "family": "Equivalent family",
