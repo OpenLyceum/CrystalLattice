@@ -338,11 +338,21 @@ export class AperiodicOrderScreenView extends ScreenView {
         [
           model.placementRefusedProperty,
           model.legalSlotCountProperty,
+          model.candidatesProperty,
           screenStrings.illegalPlacementStringProperty,
           screenStrings.stuckNoteStringProperty,
           screenStrings.placementHintStringProperty,
+          screenStrings.noSlotsForShapeStringProperty,
         ],
-        (refused, legalSlots, illegal, stuck, hint) => (refused ? illegal : legalSlots === 0 ? stuck : hint),
+        (refused, legalSlots, candidates, illegal, stuck, hint, otherShape) => {
+          if (refused) {
+            return illegal;
+          }
+          if (legalSlots > 0) {
+            return hint;
+          }
+          return candidates.some((candidate) => candidate.legal) ? otherShape : stuck;
+        },
       ),
       {
         font: new PhetFont(READOUT_FONT_SIZE - 1),

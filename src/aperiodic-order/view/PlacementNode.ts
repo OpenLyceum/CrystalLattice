@@ -84,7 +84,9 @@ export class PlacementNode extends Node {
     this.pdomOrder = [this.paletteLayer, this.slotLayer];
     this.disposePalette = this.buildPalette(viewSize);
 
-    this.multilink = Multilink.multilink([model.placedRhombiProperty, model.candidatesProperty], () => this.rebuild());
+    this.multilink = Multilink.multilink([model.placedRhombiProperty, model.selectedCandidatesProperty], () =>
+      this.rebuild(),
+    );
   }
 
   /** Redraws the placed tiles and the slots on offer. */
@@ -97,7 +99,7 @@ export class PlacementNode extends Node {
     const a11y = StringManager.getInstance().getAperiodicOrderA11yStrings();
     replaceChildren(
       this.slotLayer,
-      this.model.candidatesProperty.value.map((candidate) => {
+      this.model.selectedCandidatesProperty.value.map((candidate) => {
         const slot = new Path(this.rhombusShape(candidate.rhombus), {
           // No fill: a slot is a place, not a tile, and a filled one reads as
           // already played.

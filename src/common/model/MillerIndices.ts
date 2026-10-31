@@ -187,6 +187,36 @@ export function directionIndicesFromVector(vector: Vector3, maxDenominator = 12)
   return deriveDirectionIndices(components).indices;
 }
 
+/** Closest low-index direction by angle. Scale-independent and bounded on every axis. */
+export function nearestDirectionIndices(vector: Vector3, maxIndex: number): IndexTriple {
+  const magnitude = vector.magnitude;
+  if (magnitude === 0 || !Number.isFinite(magnitude)) {
+    return [0, 0, 0];
+  }
+  const unit = vector.timesScalar(1 / magnitude);
+  let best: IndexTriple = [0, 0, 0];
+  let bestCosine = -Infinity;
+  let bestLength = Infinity;
+  for (let u = -maxIndex; u <= maxIndex; u++) {
+    for (let v = -maxIndex; v <= maxIndex; v++) {
+      for (let w = -maxIndex; w <= maxIndex; w++) {
+        const length = Math.hypot(u, v, w);
+        const indices: IndexTriple = [u, v, w];
+        if (length === 0 || gcdOfTriple(indices) !== 1) {
+          continue;
+        }
+        const cosine = (unit.x * u + unit.y * v + unit.z * w) / length;
+        if (cosine > bestCosine + 1e-12 || (Math.abs(cosine - bestCosine) <= 1e-12 && length < bestLength)) {
+          best = indices;
+          bestCosine = cosine;
+          bestLength = length;
+        }
+      }
+    }
+  }
+  return best;
+}
+
 /**
  * Interplanar spacing for a cubic crystal, d = a / √(h² + k² + l²).
  * Cubic only — the general formula depends on the full metric tensor, which
@@ -259,7 +289,8 @@ export function formatIndex(index: number): string {
 
 /** Formats a triple with the given brackets, e.g. "(1̄10)" or "[111]". */
 export function formatTriple(indices: IndexTriple, open: string, close: string): string {
-  return `${open}${indices.map(formatIndex).join("")}${close}`;
+  const separator = indices.some((index) => Math.abs(index) >= 10) ? " " : "";
+  return `${open}${indices.map(formatIndex).join(separator)}${close}`;
 }
 
 /** "(hkl)" — a specific plane. */

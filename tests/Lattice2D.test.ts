@@ -34,6 +34,23 @@ const RECTANGULAR: Lattice2DParameters = { a1: 1, a2: 1.5, gamma: degrees(90) };
 const OBLIQUE: Lattice2DParameters = { a1: 1, a2: 1.4, gamma: degrees(70) };
 
 describe("classification", () => {
+  for (const { parameters, expected } of [
+    { parameters: { a1: 0.2, a2: Math.SQRT2 * 0.2, gamma: degrees(45) }, expected: Lattice2DType.SQUARE },
+    {
+      parameters: { a1: 0.2, a2: Math.hypot(0.2, 0.3), gamma: Math.atan2(0.3, 0.2) },
+      expected: Lattice2DType.RECTANGULAR,
+    },
+    { parameters: { a1: 0.2, a2: Math.sqrt(0.12), gamma: degrees(30) }, expected: Lattice2DType.HEXAGONAL },
+    {
+      parameters: { a1: 0.2, a2: 0.4 * Math.cos(degrees(50)), gamma: degrees(50) },
+      expected: Lattice2DType.CENTERED_RECTANGULAR,
+    },
+  ]) {
+    it(`recognizes ${expected} with a sheared primitive basis`, () => {
+      expect(classifyLattice(parameters)).toBe(expected);
+    });
+  }
+
   it("recognizes the square lattice", () => {
     expect(classifyLattice(SQUARE)).toBe(Lattice2DType.SQUARE);
   });

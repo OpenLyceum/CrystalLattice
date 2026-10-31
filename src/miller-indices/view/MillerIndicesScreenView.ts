@@ -174,6 +174,11 @@ export class MillerIndicesScreenView extends ScreenView {
       ),
     });
 
+    const planeModeProperty = new DerivedProperty([model.modeProperty], (mode) => mode === MillerMode.PLANE);
+    const planarDensityVisibleProperty = new DerivedProperty(
+      [planeModeProperty, advancedVisibleProperty],
+      (plane, advanced) => plane && advanced,
+    );
     const quantitiesPanel = new DerivedQuantitiesPanel(
       [
         indexRow,
@@ -191,6 +196,7 @@ export class MillerIndicesScreenView extends ScreenView {
         },
         {
           label: screenStrings.interplanarSpacingStringProperty,
+          visibleProperty: planeModeProperty,
           value: new DerivedProperty(
             [model.spacingProperty, spacingFormattedProperty, commonStrings.infinityStringProperty],
             (spacing, formatted, infinity) => (Number.isFinite(spacing) ? formatted : infinity),
@@ -201,7 +207,7 @@ export class MillerIndicesScreenView extends ScreenView {
           value: new PatternStringProperty(commonStrings.valuePerNmSquaredStringProperty, {
             value: new DerivedProperty([model.planarDensityProperty], (density) => toFixed(density, 1)),
           }),
-          visibleProperty: advancedVisibleProperty,
+          visibleProperty: planarDensityVisibleProperty,
         },
       ],
       {
@@ -221,6 +227,7 @@ export class MillerIndicesScreenView extends ScreenView {
       left: quantitiesPanel.right + PANEL_ROW_SPACING,
       bottom: this.layoutBounds.maxY - SCREEN_VIEW_MARGIN,
       opacity: 0.85,
+      visibleProperty: planeModeProperty,
     });
     this.addChild(misconceptionNote);
 

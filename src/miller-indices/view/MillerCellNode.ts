@@ -110,6 +110,10 @@ export class MillerCellNode extends Projected3DNode {
   private readonly handleLayer = new Node();
   private readonly interceptHandles: readonly Circle[];
   private readonly directionHandle: Circle;
+  /** Accumulate small key moves before snapping, so quantization cannot trap the tip. */
+  private keyboardDirectionTarget: Vector3 | null = null;
+  private keyboardDirectionIndices: IndexTriple | null = null;
+  private keyboardDirectionCamera: Projection3D | null = null;
 
   public constructor(model: MillerIndicesModel, viewSize: number, providedOptions?: MillerCellNodeOptions) {
     // Room for the cube's half-diagonal plus the axis labels beyond it.
@@ -171,6 +175,9 @@ export class MillerCellNode extends Projected3DNode {
     const offset = new Vector3(edge / 2, edge / 2, edge / 2);
 
     const isPlaneMode = this.model.modeProperty.value === MillerMode.PLANE;
+    if (isPlaneMode) {
+      this.keyboardDirectionTarget = null;
+    }
     const children: Node[] = [this.createWireframe(camera, offset), ...this.createAxes(camera, offset)];
 
     if (isPlaneMode) {
@@ -346,6 +353,7 @@ export class MillerCellNode extends Projected3DNode {
    * is how the third component is reached.
    */
   private dragDirectionTo(localPoint: Vector2): void {
+    this.keyboardDirectionTarget = null;
     const camera = this.cameraProperty.value;
     const edge = this.model.edgeLength;
     const offset = new Vector3(edge / 2, edge / 2, edge / 2);
@@ -359,7 +367,12 @@ export class MillerCellNode extends Projected3DNode {
     const camera = this.cameraProperty.value;
     const edge = this.model.edgeLength;
     const offset = new Vector3(edge / 2, edge / 2, edge / 2);
-    const current = this.model.directionVectorProperty.value.minus(offset);
+    const indices = this.model.directionIndicesProperty.value;
+    const previousTarget =
+      this.keyboardDirectionIndices === indices && this.keyboardDirectionCamera === camera
+        ? this.keyboardDirectionTarget
+        : null;
+    const current = (previousTarget ?? this.model.directionVectorProperty.value).minus(offset);
     const view = camera.projectToView(current);
 
     const step = DIRECTION_KEY_STEP * edge * camera.scale;
@@ -369,7 +382,11 @@ export class MillerCellNode extends Projected3DNode {
       keysPressed === "arrowDown" ? step : keysPressed === "arrowUp" ? -step : 0,
     );
 
-    this.model.setDirectionFromVector(camera.unproject(view.plus(delta), camera.depthOf(current)).plus(offset));
+    const target = camera.unproject(view.plus(delta), camera.depthOf(current)).plus(offset);
+    this.model.setDirectionFromVector(target);
+    this.keyboardDirectionTarget = target;
+    this.keyboardDirectionIndices = this.model.directionIndicesProperty.value;
+    this.keyboardDirectionCamera = camera;
   }
 
   /** The model-space point `position` cell edges out along one axis. */

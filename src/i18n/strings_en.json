@@ -46,6 +46,7 @@
     "bisectors": "Bisector construction",
     "coordinationShell": "Nearest-neighbour shell",
     "snapTo": "Snap to",
+    "snapAction": "Snap the lattice to {{type}}",
     "latticeType": "Lattice type",
     "cellArea": "Cell area",
     "arealDensity": "Areal density",
@@ -174,6 +175,7 @@
     "legalSlots": "Legal slots",
     "placementHint": "Green outlines are legal. Red ones fit the shapes perfectly and are still forbidden — that is the matching rule at work.",
     "illegalPlacement": "Refused: that corner arrangement never occurs in a Penrose tiling.",
+    "noSlotsForShape": "No legal slot for this shape. Try the other tile.",
     "stuckNote": "No legal slot left. This is the dead end that makes inflation, not matching rules, the way to grow a big tiling."
   },
   "a11y": {

@@ -19,12 +19,12 @@ import { MAX_INTERCEPT_DENOMINATOR, MAX_MILLER_INDEX, MILLER_CELL_EDGE_NM } from
 import { CubicStructure, generateCellAtoms } from "../../common/model/CubicCell.js";
 import {
   derivePlaneIndices,
-  directionIndicesFromVector,
   equivalentFamily,
   type IndexTriple,
   type Intercepts,
   interceptsFromIndices,
   interplanarSpacing,
+  nearestDirectionIndices,
   type PlaneDerivation,
   planarDensity,
   planeNormal,
@@ -177,9 +177,9 @@ export class MillerIndicesModel implements TModel {
     return true;
   }
 
-  /** Sets the direction from a dragged vector, reducing it to smallest integers. */
+  /** Snaps a dragged vector to the closest direction within the supported index bound. */
   public setDirectionFromVector(vector: Vector3): void {
-    const indices = directionIndicesFromVector(vector.timesScalar(1 / this.edgeLength), MAX_INTERCEPT_DENOMINATOR);
+    const indices = nearestDirectionIndices(vector, MAX_MILLER_INDEX);
     if (indices.some((index) => index !== 0)) {
       this.directionIndicesProperty.value = indices;
     }

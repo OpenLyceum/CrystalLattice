@@ -133,8 +133,10 @@ export class Lattices2DModel implements TModel {
    */
   public snapTo(type: Lattice2DType): void {
     const snapped = snapParametersFor(type, this.a1Property.value);
-    this.a1Property.value = LATTICE_VECTOR_RANGE.constrainValue(snapped.a1);
-    this.a2Property.value = LATTICE_VECTOR_RANGE.constrainValue(snapped.a2);
+    // Fit both lengths together: independent clamps would change the Bravais type.
+    const scale = Math.min(1, LATTICE_VECTOR_RANGE.max / Math.max(snapped.a1, snapped.a2));
+    this.a1Property.value = snapped.a1 * scale;
+    this.a2Property.value = snapped.a2 * scale;
     this.gammaDegreesProperty.value = GAMMA_RANGE.constrainValue((snapped.gamma * 180) / Math.PI);
     this.centeredBasisProperty.value = snapped.centered ?? false;
   }

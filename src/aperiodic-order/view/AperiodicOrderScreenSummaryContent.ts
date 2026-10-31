@@ -46,7 +46,7 @@ export class AperiodicOrderScreenSummaryContent extends ScreenSummaryContent {
       thin: new DerivedProperty([model.tileCountsProperty], (counts) => `${counts.thin}`),
       legal: new DerivedProperty([model.legalSlotCountProperty], (count) => `${count}`),
       forbidden: new DerivedProperty(
-        [model.candidatesProperty, model.legalSlotCountProperty],
+        [model.selectedCandidatesProperty, model.legalSlotCountProperty],
         (candidates, legal) => `${candidates.length - legal}`,
       ),
     });

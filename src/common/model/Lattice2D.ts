@@ -238,32 +238,9 @@ export function firstCoordinationShell(parameters: Lattice2DParameters): Coordin
  * as such — that equivalence is one of the things the screen exists to show.
  */
 export function classifyLattice(parameters: Lattice2DParameters): Lattice2DType {
-  const { a1, a2, gamma, centered = false } = parameters;
-  if (centered) {
-    // The centre atoms change the lattice itself — centring a hexagonal cell
-    // gives a rectangular lattice — so classify the lattice that is drawn.
-    return classifyReducedBasis(...reducedBasis(parameters));
-  }
-
-  const equalLengths = Math.abs(a1 - a2) <= LENGTH_TOLERANCE_FRACTION * Math.max(a1, a2);
-  const isAngle = (degrees: number): boolean => Math.abs(gamma - (degrees * Math.PI) / 180) <= ANGLE_TOLERANCE_RADIANS;
-  const rightAngle = isAngle(90);
-  const hexAngle = isAngle(120) || isAngle(60);
-
-  if (equalLengths && rightAngle) {
-    return Lattice2DType.SQUARE;
-  }
-  if (equalLengths && hexAngle) {
-    return Lattice2DType.HEXAGONAL;
-  }
-  if (rightAngle) {
-    return Lattice2DType.RECTANGULAR;
-  }
-  if (equalLengths) {
-    // Rhombic primitive cell — the centred rectangular lattice in disguise.
-    return Lattice2DType.CENTERED_RECTANGULAR;
-  }
-  return Lattice2DType.OBLIQUE;
+  // Any primitive description can be sheared. Classify the point lattice rather
+  // than the particular parallelogram the student chose to span it.
+  return classifyReducedBasis(...reducedBasis(parameters));
 }
 
 /**

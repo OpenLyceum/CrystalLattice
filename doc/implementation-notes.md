@@ -72,6 +72,19 @@ into `(100)` through rounding. A dragged handle becomes a rational via a bounded
 The four stages are all exposed on `PlaneDerivation`, because the screen shows the work rather than
 just the answer.
 
+Direction-tip input uses `nearestDirectionIndices`: enumerate the primitive integer triples
+within the index bound and maximize the cosine with the requested vector, preferring the shortest
+triple on angular ties. The view retains an unsnapped keyboard target so repeated small keys cross
+snap boundaries. It restarts that target after pointer edits, a different model triple, a camera
+change or a return from plane mode. Plane-only quantities and notes follow the mode explicitly.
+
+## Lattice classification and snap actions
+
+`classifyLattice` always reduces the basis before classification, including an uncentred cell.
+The snap controls are buttons rather than stored selection state, so a repeated activation and
+an activation after Reset All have identical behavior. The screen model uniformly scales both
+canonical vectors to fit their range, keeping the ratio that determines the Bravais type.
+
 ## Aperiodic tilings
 
 **Penrose** uses the Robinson-triangle substitution: each triangle is subdivided into smaller copies
@@ -92,6 +105,11 @@ filtered, because the illegal ones are the lesson: they fit flush and are refuse
 the whole content of "matching rules". Getting stuck is a reachable state and is reported as such —
 it is why nobody grows large Penrose tilings this way, and the `Inflate` button next door is the
 answer to it.
+
+All candidates stay cached in `candidatesProperty`; the cheap `selectedCandidatesProperty` filters
+them by the armed palette shape. It drives the board, legal-slot count and forbidden-slot summary.
+The model also rejects activation with the wrong shape, so keyboard slots and pointer drops agree.
+The feedback distinguishes a selected shape without a legal slot from a dead end for both shapes.
 
 Ordering the corners around a vertex is the fiddly part. `isVertexStarLegal` reads a partial vertex
 as a contiguous arc of some legal star, so the corners have to be handed to it in true angular order

@@ -58,6 +58,21 @@ a view or a screen model is the mistake this codebase is arranged to prevent.
 
 Physics and behavior: `doc/model.md`.
 
+### Functional contracts
+
+- Classify the reduced point lattice for both centred and uncentred descriptions; a skewed
+  primitive basis may still generate a square or rectangular lattice.
+- The five snap buttons are repeatable actions. Fit canonical lengths into the slider range by
+  scaling both together, preserving their ratio rather than clamping independently.
+- `candidatesProperty` contains all hand-placement candidates. `selectedCandidatesProperty`
+  filters them for the armed shape and drives visible slots, legal counts and summary counts.
+  `placeTile()` rejects an opposite-shape candidate. Distinguish no slot for the armed shape
+  from a board with no legal move for either shape.
+- Direction-handle input uses the closest primitive direction by angle with every index bounded
+  by `MAX_MILLER_INDEX`. Keyboard moves accumulate an unsnapped target to avoid getting stuck
+  inside one snap region; reset/preset, mode, camera and pointer changes invalidate that target.
+- Plane spacing, planar density and the (200) note are hidden in direction mode.
+
 ## Accessibility
 
 Every screen ships all three layers: a `*ScreenSummaryContent` with a **live** `currentDetailsContent`
@@ -100,6 +115,10 @@ open PRs that fight the overrides. Revisit when SceneryStack drops or re-pins th
 | `tests/CubicCell.test.ts` | Atom sharing, APF, theoretical density against textbook values |
 | `tests/ClosePacking.test.ts` | Stacking classification, HCP/FCC packing equality, c/a dependence |
 | `tests/MillerIndices.test.ts` | The four-stage pipeline, the (200) trap, planar density |
+| `tests/Lattices2DModel.test.ts` | Snap type/ratio at both bounds and mixed inputs, reset |
+| `tests/MillerDirectionModel.test.ts` | Closest bounded directions, reset and multi-digit formatting |
+| `tests/PlacementModel.test.ts` | Armed-shape eligibility, slot counts and reset |
+| `tests/browser/review-regressions.spec.ts` | Actual snap/drag/palette/slot/direction controls, plane-only rows and translated actions |
 | `tests/AperiodicTiling.test.ts` | Penrose ratios → φ, hat congruence and φ⁴ reflection ratio, hand-placement legality |
 | `tests/DiffractionPattern.test.ts` | 4-fold square, 6-fold hexagonal, 10-fold Penrose |
 | `tests/memory-leak.test.ts` | WeakRef + `forceGC` regression across all five screen models |

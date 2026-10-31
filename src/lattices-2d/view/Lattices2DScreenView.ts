@@ -10,11 +10,11 @@
  * by dragging rather than picks from a menu.
  */
 
-import { DerivedProperty, PatternStringProperty, Property } from "scenerystack/axon";
+import { DerivedProperty, PatternStringProperty } from "scenerystack/axon";
 import { toFixed } from "scenerystack/dot";
 import { Shape } from "scenerystack/kite";
 import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
-import { Node, Rectangle, VBox } from "scenerystack/scenery";
+import { HBox, Node, Rectangle, VBox } from "scenerystack/scenery";
 import { ResetAllButton } from "scenerystack/scenery-phet";
 import { ScreenView, type ScreenViewOptions } from "scenerystack/sim";
 import CrystalLatticeColors from "../../CrystalLatticeColors.js";
@@ -30,9 +30,9 @@ import { Lattice2DType } from "../../common/model/Lattice2D.js";
 import {
   controlColumn,
   createCheckbox,
-  createComboBox,
   createHeading,
   createSlider,
+  createTextButton,
 } from "../../common/view/ControlFactory.js";
 import { DerivedQuantitiesPanel } from "../../common/view/DerivedQuantitiesPanel.js";
 import { StringManager } from "../../i18n/StringManager.js";
@@ -89,8 +89,6 @@ export class Lattices2DScreenView extends ScreenView {
     this.addChild(playAreaFrame);
 
     // ── Controls ──────────────────────────────────────────────────────────────
-    const comboBoxParent = new Node();
-
     const a1Slider = createSlider(
       screenStrings.vectorA1StringProperty,
       model.a1Property,
@@ -121,23 +119,30 @@ export class Lattices2DScreenView extends ScreenView {
 
     // The "snap to" control is a check on an answer, not the way in, so it sits
     // below the sliders rather than at the top of the column.
-    const snapProperty = new Property<Lattice2DType>(Lattice2DType.SQUARE);
-    snapProperty.lazyLink((type) => model.snapTo(type));
-    const snapComboBox = createComboBox(
-      snapProperty,
-      [
-        { value: Lattice2DType.SQUARE, label: screenStrings.types.squareStringProperty },
-        { value: Lattice2DType.RECTANGULAR, label: screenStrings.types.rectangularStringProperty },
-        {
-          value: Lattice2DType.CENTERED_RECTANGULAR,
-          label: screenStrings.types.centeredRectangularStringProperty,
-        },
-        { value: Lattice2DType.HEXAGONAL, label: screenStrings.types.hexagonalStringProperty },
-        { value: Lattice2DType.OBLIQUE, label: screenStrings.types.obliqueStringProperty },
-      ],
-      comboBoxParent,
-      a11y.controls.snapToStringProperty,
+    // These are actions, not persistent state: pressing the same target again
+    // must reapply it after slider edits or Reset All.
+    const snapButtons = [
+      { value: Lattice2DType.SQUARE, label: screenStrings.types.squareStringProperty },
+      { value: Lattice2DType.RECTANGULAR, label: screenStrings.types.rectangularStringProperty },
+      { value: Lattice2DType.CENTERED_RECTANGULAR, label: screenStrings.types.centeredRectangularStringProperty },
+      { value: Lattice2DType.HEXAGONAL, label: screenStrings.types.hexagonalStringProperty },
+      { value: Lattice2DType.OBLIQUE, label: screenStrings.types.obliqueStringProperty },
+    ].map(({ value, label }) =>
+      createTextButton(
+        label,
+        () => model.snapTo(value),
+        new PatternStringProperty(screenStrings.snapActionStringProperty, { type: label }),
+      ),
     );
+    const snapActions = new VBox({
+      align: "left",
+      spacing: 4,
+      children: [
+        new HBox({ spacing: 4, children: snapButtons.slice(0, 2) }),
+        new HBox({ children: snapButtons.slice(2, 3) }),
+        new HBox({ spacing: 4, children: snapButtons.slice(3) }),
+      ],
+    });
 
     const controlsPanel = new CrystalLatticePanel(
       controlColumn([
@@ -146,7 +151,7 @@ export class Lattices2DScreenView extends ScreenView {
         gammaSlider,
         centeredCheckbox,
         createHeading(screenStrings.snapToStringProperty),
-        snapComboBox,
+        snapActions,
       ]),
     );
 
@@ -250,10 +255,6 @@ export class Lattices2DScreenView extends ScreenView {
     });
     this.addChild(resetAllButton);
 
-    // The combo-box list must be able to pop over everything, so its parent is
-    // added last and sits above the panels in z-order.
-    this.addChild(comboBoxParent);
-
     // ── Accessibility: traversal order ────────────────────────────────────────
     this.addChild(
       new Node({
@@ -264,7 +265,7 @@ export class Lattices2DScreenView extends ScreenView {
           a2Slider,
           gammaSlider,
           centeredCheckbox,
-          snapComboBox,
+          ...snapButtons,
           ...overlayCheckboxes,
           resetAllButton,
         ],

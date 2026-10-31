@@ -46,6 +46,7 @@
     "bisectors": "Construction par médiatrices",
     "coordinationShell": "Couche des plus proches voisins",
     "snapTo": "Aligner sur",
+    "snapAction": "Aligner le réseau sur {{type}}",
     "latticeType": "Type de réseau",
     "cellArea": "Aire de la maille",
     "arealDensity": "Densité surfacique",
@@ -174,6 +175,7 @@
     "legalSlots": "Emplacements valides",
     "placementHint": "Les contours verts sont valides. Les rouges s'emboîtent parfaitement et restent interdits — c'est la règle d'assemblage à l'œuvre.",
     "illegalPlacement": "Refusé : cet agencement de coins n'apparaît jamais dans un pavage de Penrose.",
+    "noSlotsForShape": "Aucun emplacement valide pour cette forme. Essayez l'autre tuile.",
     "stuckNote": "Plus aucun emplacement valide. C'est l'impasse qui fait de l'inflation, et non des règles d'assemblage, la façon de faire croître un grand pavage."
   },
   "a11y": {

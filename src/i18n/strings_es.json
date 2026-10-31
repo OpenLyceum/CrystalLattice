@@ -46,6 +46,7 @@
     "bisectors": "Construcción con mediatrices",
     "coordinationShell": "Capa de vecinos más próximos",
     "snapTo": "Ajustar a",
+    "snapAction": "Ajustar la red a {{type}}",
     "latticeType": "Tipo de red",
     "cellArea": "Área de la celda",
     "arealDensity": "Densidad superficial",
@@ -174,6 +175,7 @@
     "legalSlots": "Huecos válidos",
     "placementHint": "Los contornos verdes son válidos. Los rojos encajan perfectamente y siguen estando prohibidos: esa es la regla de emparejamiento en acción.",
     "illegalPlacement": "Rechazado: esa disposición de esquinas nunca aparece en un mosaico de Penrose.",
+    "noSlotsForShape": "No hay huecos válidos para esta forma. Prueba la otra pieza.",
     "stuckNote": "No queda ningún hueco válido. Este es el callejón sin salida que hace que la inflación, y no las reglas de emparejamiento, sea la forma de hacer crecer un mosaico grande."
   },
   "a11y": {

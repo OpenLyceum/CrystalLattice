@@ -159,6 +159,9 @@ export class AperiodicOrderModel implements TModel {
   /** Every place a next tile could go, each labelled legal or not. */
   public readonly candidatesProperty: TReadOnlyProperty<readonly PlacementCandidate[]>;
 
+  /** Slots for the armed palette shape, the only slots visible/activatable on the board. */
+  public readonly selectedCandidatesProperty: TReadOnlyProperty<readonly PlacementCandidate[]>;
+
   /** How many of those places the matching rules allow — zero means stuck. */
   public readonly legalSlotCountProperty: TReadOnlyProperty<number>;
 
@@ -187,8 +190,12 @@ export class AperiodicOrderModel implements TModel {
     // test per tile, so it is derived from the placed tiles alone and recomputed
     // only when one is added or removed — never on a redraw.
     this.candidatesProperty = new DerivedProperty([this.placedRhombiProperty], (placed) => candidatePlacements(placed));
+    this.selectedCandidatesProperty = new DerivedProperty(
+      [this.candidatesProperty, this.selectedTileProperty],
+      (candidates, selected) => candidates.filter((candidate) => candidate.rhombus.type === selected),
+    );
     this.legalSlotCountProperty = new DerivedProperty(
-      [this.candidatesProperty],
+      [this.selectedCandidatesProperty],
       (candidates) => candidates.filter((candidate) => candidate.legal).length,
     );
 
@@ -303,7 +310,7 @@ export class AperiodicOrderModel implements TModel {
    * @returns whether the tile was placed
    */
   public placeTile(candidate: PlacementCandidate): boolean {
-    if (!candidate.legal) {
+    if (!candidate.legal || candidate.rhombus.type !== this.selectedTileProperty.value) {
       this.placementRefusedProperty.value = true;
       return false;
     }
