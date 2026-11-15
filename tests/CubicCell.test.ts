@@ -14,17 +14,13 @@ import {
   CubicStructure,
   cellEdgeIndices,
   coordinationNumber,
-  generateBCC,
-  generateFCC,
-  generateSC,
-  maximumPackingFactor,
+  generateCellAtoms,
   packingFactor,
   SiteKind,
   sharingFractionFor,
   siteKindFor,
   spheresOverlap,
   theoreticalDensity,
-  touchingEdgeLength,
   touchingRadius,
 } from "../src/common/model/CubicCell.js";
 
@@ -52,17 +48,17 @@ describe("atom sharing", () => {
 
 describe("cell contents", () => {
   it("draws eight corners for simple cubic and counts one atom", () => {
-    expect(generateSC()).toHaveLength(8);
+    expect(generateCellAtoms(CubicStructure.SIMPLE_CUBIC)).toHaveLength(8);
     expect(atomsPerCell(CubicStructure.SIMPLE_CUBIC)).toBe(1);
   });
 
   it("draws nine spheres for BCC and counts two atoms", () => {
-    expect(generateBCC()).toHaveLength(9);
+    expect(generateCellAtoms(CubicStructure.BODY_CENTERED)).toHaveLength(9);
     expect(atomsPerCell(CubicStructure.BODY_CENTERED)).toBe(2);
   });
 
   it("draws fourteen spheres for FCC and counts four atoms", () => {
-    expect(generateFCC()).toHaveLength(14);
+    expect(generateCellAtoms(CubicStructure.FACE_CENTERED)).toHaveLength(14);
     expect(atomsPerCell(CubicStructure.FACE_CENTERED)).toBe(4);
   });
 
@@ -92,25 +88,33 @@ describe("touching radius", () => {
     expect(touchingRadius(CubicStructure.FACE_CENTERED, 1)).toBeCloseTo(Math.SQRT2 / 4, 10);
   });
 
-  it("round-trips through the inverse relation", () => {
+  it("scales linearly with the cell edge", () => {
     for (const structure of Object.values(CubicStructure)) {
-      const radius = touchingRadius(structure, 0.36);
-      expect(touchingEdgeLength(structure, radius)).toBeCloseTo(0.36, 10);
+      expect(touchingRadius(structure, 0.36)).toBeCloseTo(0.36 * touchingRadius(structure, 1), 10);
     }
   });
 });
 
 describe("atomic packing factor", () => {
   it("reaches 0.524 for simple cubic", () => {
-    expect(maximumPackingFactor(CubicStructure.SIMPLE_CUBIC)).toBeCloseTo(0.5236, 4);
+    expect(packingFactor(CubicStructure.SIMPLE_CUBIC, 1, touchingRadius(CubicStructure.SIMPLE_CUBIC, 1))).toBeCloseTo(
+      0.5236,
+      4,
+    );
   });
 
   it("reaches 0.680 for BCC", () => {
-    expect(maximumPackingFactor(CubicStructure.BODY_CENTERED)).toBeCloseTo(0.6802, 4);
+    expect(packingFactor(CubicStructure.BODY_CENTERED, 1, touchingRadius(CubicStructure.BODY_CENTERED, 1))).toBeCloseTo(
+      0.6802,
+      4,
+    );
   });
 
   it("reaches 0.740 for FCC", () => {
-    expect(maximumPackingFactor(CubicStructure.FACE_CENTERED)).toBeCloseTo(0.7405, 4);
+    expect(packingFactor(CubicStructure.FACE_CENTERED, 1, touchingRadius(CubicStructure.FACE_CENTERED, 1))).toBeCloseTo(
+      0.7405,
+      4,
+    );
   });
 
   it("keeps climbing past 1 when the radius is driven past touching", () => {
