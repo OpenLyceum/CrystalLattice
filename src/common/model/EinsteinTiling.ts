@@ -210,7 +210,7 @@ function buildF(): Cluster {
 }
 
 /** The four base metatiles — level 1 of the hierarchy, hats at the leaves. */
-export function baseMetatiles(): [Cluster, Cluster, Cluster, Cluster] {
+function baseMetatiles(): [Cluster, Cluster, Cluster, Cluster] {
   return [buildH(), buildT(), buildP(), buildF()];
 }
 

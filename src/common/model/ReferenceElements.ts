@@ -6,7 +6,7 @@
  * `elements.json` so it can be extended without touching model code.
  */
 
-import { CubicStructure, theoreticalDensity, touchingRadius } from "./CubicCell.js";
+import { CubicStructure } from "./CubicCell.js";
 import elementsData from "./elements.json";
 
 /** One tabulated cubic metal. */
@@ -42,24 +42,9 @@ export const REFERENCE_ELEMENTS: readonly ReferenceElement[] = elementsData.elem
   measuredDensity: entry.measuredDensity,
 }));
 
-/** Looks an element up by symbol; undefined when it is not tabulated. */
-export function elementBySymbol(symbol: string): ReferenceElement | undefined {
-  return REFERENCE_ELEMENTS.find((element) => element.symbol === symbol);
-}
-
 /** Only the elements crystallizing in the given structure. */
-export function elementsWithStructure(structure: CubicStructure): ReferenceElement[] {
+function elementsWithStructure(structure: CubicStructure): ReferenceElement[] {
   return REFERENCE_ELEMENTS.filter((element) => element.structure === structure);
-}
-
-/** The hard-sphere atomic radius implied by an element's structure and lattice constant, in nm. */
-export function atomicRadiusNm(element: ReferenceElement): number {
-  return touchingRadius(element.structure, element.latticeConstantNm);
-}
-
-/** The density computed from n·M/(N_A·a³), in g/cm³, for comparison with `measuredDensity`. */
-export function computedDensity(element: ReferenceElement): number {
-  return theoreticalDensity(element.structure, element.latticeConstantNm, element.molarMass);
 }
 
 /**

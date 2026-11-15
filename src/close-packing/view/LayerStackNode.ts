@@ -125,7 +125,7 @@ export class LayerStackNode extends Projected3DNode {
 }
 
 /** The colour of a layer, which is the only thing distinguishing HCP from FCC. */
-export function layerColorProperty(position: LayerPosition) {
+function layerColorProperty(position: LayerPosition) {
   switch (position) {
     case LayerPosition.A:
       return CrystalLatticeColors.layerAColorProperty;

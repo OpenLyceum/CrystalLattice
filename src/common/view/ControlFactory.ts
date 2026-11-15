@@ -13,7 +13,7 @@
 
 import type { PhetioProperty, TReadOnlyProperty } from "scenerystack/axon";
 import type { Range } from "scenerystack/dot";
-import { HBox, type Node, Text, VBox } from "scenerystack/scenery";
+import { type Node, Text, VBox } from "scenerystack/scenery";
 import { NumberControl, type NumberControlOptions, PhetFont } from "scenerystack/scenery-phet";
 import {
   AquaRadioButtonGroup,
@@ -40,7 +40,7 @@ import {
 } from "../CrystalLatticeButtonOptions.js";
 
 /** Body text on a panel fill. */
-export function panelFont(): PhetFont {
+function panelFont(): PhetFont {
   return new PhetFont(CONTROL_FONT_SIZE);
 }
 
@@ -205,9 +205,4 @@ export function createRadioGroup<T>(
 /** Stacks controls into a left-aligned column with the panel's standard spacing. */
 export function controlColumn(children: readonly Node[], spacing = PANEL_ROW_SPACING): VBox {
   return new VBox({ align: "left", spacing, children: [...children] });
-}
-
-/** Lays controls out in a row with the panel's standard spacing. */
-export function controlRow(children: readonly Node[], spacing = PANEL_ROW_SPACING): HBox {
-  return new HBox({ align: "center", spacing, children: [...children] });
 }

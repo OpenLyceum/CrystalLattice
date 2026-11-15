@@ -85,10 +85,10 @@ export function isRhombusMode(mode: TilingMode): boolean {
 }
 
 /** Slider range for the Penrose inflation depth. */
-export const INFLATION_RANGE = new Range(MIN_INFLATION_STEPS, MAX_INFLATION_STEPS);
+const INFLATION_RANGE = new Range(MIN_INFLATION_STEPS, MAX_INFLATION_STEPS);
 
 /** Slider range for the hat substitution depth. */
-export const HAT_STEPS_RANGE = new Range(0, MAX_HAT_STEPS);
+const HAT_STEPS_RANGE = new Range(0, MAX_HAT_STEPS);
 
 /** Radius of the periodic-lattice patch, in the same units as a Penrose seed. */
 const PERIODIC_PATCH_RADIUS = 0.5;

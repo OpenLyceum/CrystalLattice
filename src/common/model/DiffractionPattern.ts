@@ -63,7 +63,7 @@ export type DiffractionResult = {
  * scale instead. (This is also what a real diffraction experiment does, with a
  * beam stop.)
  */
-export const FORWARD_PEAK_EXCLUSION = 0.04;
+const FORWARD_PEAK_EXCLUSION = 0.04;
 
 /**
  * Computes the diffraction intensity of a point set on a square k-grid.

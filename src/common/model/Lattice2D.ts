@@ -36,8 +36,8 @@ export type Lattice2DType = (typeof Lattice2DType)[keyof typeof Lattice2DType];
  * screen is designed so a student *finds* the square lattice by dragging into
  * it, which only feels like a discovery if the target has some width.
  */
-export const LENGTH_TOLERANCE_FRACTION = 0.02;
-export const ANGLE_TOLERANCE_RADIANS = (1.5 * Math.PI) / 180;
+const LENGTH_TOLERANCE_FRACTION = 0.02;
+const ANGLE_TOLERANCE_RADIANS = (1.5 * Math.PI) / 180;
 
 /** Primitive-vector description of a 2D lattice. */
 export type Lattice2DParameters = {
@@ -79,7 +79,7 @@ export function primitiveVector2(parameters: Lattice2DParameters): Vector2 {
  * ±2 search windows below are always enough, however skewed the sliders make
  * the primitive cell.
  */
-export function reducedBasis(parameters: Lattice2DParameters): [Vector2, Vector2] {
+function reducedBasis(parameters: Lattice2DParameters): [Vector2, Vector2] {
   const v1 = primitiveVector1(parameters);
   const v2 = primitiveVector2(parameters);
   let u = v1;

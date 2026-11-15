@@ -73,7 +73,7 @@ export type PenroseRhombus = {
 };
 
 /** The rhombus a Robinson triangle is half of. */
-export function rhombusTypeOf(triangleType: RobinsonTriangleType): RhombusType {
+function rhombusTypeOf(triangleType: RobinsonTriangleType): RhombusType {
   return triangleType === RobinsonTriangleType.ACUTE ? RhombusType.THIN : RhombusType.THICK;
 }
 
@@ -269,11 +269,6 @@ export function tilingVertices(tiles: readonly (RobinsonTriangle | PenroseRhombu
   return vertices;
 }
 
-/** The polygon a triangle draws as. */
-export function trianglePolygon(triangle: RobinsonTriangle): Vector2[] {
-  return [triangle.a, triangle.b, triangle.c];
-}
-
 /**
  * The unit edge length of a tiling after `steps` inflations from a seed of the
  * given radius — each step divides every length by φ.
@@ -311,9 +306,6 @@ export function cornerAngleUnits(rhombus: PenroseRhombus, index: number): number
   // base corners (odd), so the angle alternates with them.
   return (index % 2 === 0 ? corners[0] : corners[1]) ?? 0;
 }
-
-/** A vertex configuration, as the cyclic sequence of corner angles meeting there. */
-export type VertexStar = readonly number[];
 
 let atlasCache: ReadonlySet<string> | null = null;
 
@@ -432,7 +424,7 @@ export function isVertexStarLegal(corners: readonly number[]): boolean {
  * @param existingCorners - for each of the candidate's four vertices, the
  *   corner angles (in 36° units) already present there, in order around the vertex
  */
-export function isPlacementLegal(candidate: PenroseRhombus, existingCorners: readonly (readonly number[])[]): boolean {
+function isPlacementLegal(candidate: PenroseRhombus, existingCorners: readonly (readonly number[])[]): boolean {
   for (let index = 0; index < 4; index++) {
     const corners = [...(existingCorners[index] ?? []), cornerAngleUnits(candidate, index)];
     if (!isVertexStarLegal(corners)) {
@@ -487,7 +479,7 @@ export function rhombusAt(type: RhombusType, apex: Vector2, angle: number, edgeL
 }
 
 /** The bearing of the edge leaving vertex `index` counter-clockwise. */
-export function cornerBearing(rhombus: PenroseRhombus, index: number): number {
+function cornerBearing(rhombus: PenroseRhombus, index: number): number {
   // biome-ignore lint/style/noNonNullAssertion: a rhombus always has four vertices
   const from = rhombus.vertices[index % 4]!;
   // biome-ignore lint/style/noNonNullAssertion: modular index stays in range

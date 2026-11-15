@@ -179,7 +179,7 @@ export const DEFAULT_YAW = (28 * Math.PI) / 180;
 export const DEFAULT_PITCH = (20 * Math.PI) / 180;
 
 /** Drag sensitivity: one screen pixel of drag ≈ 0.5° of rotation. */
-export const DEFAULT_RADIANS_PER_PIXEL = Math.PI / 360;
+const DEFAULT_RADIANS_PER_PIXEL = Math.PI / 360;
 
 /** Restricts a pitch angle to ±{@link MAX_PITCH}. */
 export function clampPitch(pitch: number): number {

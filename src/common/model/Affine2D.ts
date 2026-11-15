@@ -34,7 +34,7 @@ export function compose(a: Affine2D, b: Affine2D): Affine2D {
 }
 
 /** Matrix inverse. Throws when the transform is singular. */
-export function invert(t: Affine2D): Affine2D {
+function invert(t: Affine2D): Affine2D {
   const determinant = t[0] * t[4] - t[1] * t[3];
   if (determinant === 0) {
     throw new Error("Cannot invert a singular affine transform");
@@ -47,16 +47,6 @@ export function invert(t: Affine2D): Affine2D {
     t[0] / determinant,
     (t[2] * t[3] - t[0] * t[5]) / determinant,
   ];
-}
-
-/** Applies a transform to a point. */
-export function apply(t: Affine2D, point: Vector2): Vector2 {
-  return new Vector2(t[0] * point.x + t[1] * point.y + t[2], t[3] * point.x + t[4] * point.y + t[5]);
-}
-
-/** Applies a transform to every point of a polygon. */
-export function applyToPolygon(t: Affine2D, polygon: readonly Vector2[]): Vector2[] {
-  return polygon.map((point) => apply(t, point));
 }
 
 /** Translation by (tx, ty). */
@@ -76,16 +66,11 @@ export function rotationAbout(point: Vector2, angle: number): Affine2D {
   return compose(translation(point.x, point.y), compose(rotation(angle), translation(-point.x, -point.y)));
 }
 
-/** Uniform scale about the origin. */
-export function scaling(factor: number): Affine2D {
-  return [factor, 0, 0, 0, factor, 0];
-}
-
 /**
  * The similarity (rotation + uniform scale + translation, no reflection) that
  * carries the unit interval (0,0)→(1,0) onto the segment p→q.
  */
-export function matchSegment(p: Vector2, q: Vector2): Affine2D {
+function matchSegment(p: Vector2, q: Vector2): Affine2D {
   return [q.x - p.x, p.y - q.y, p.x, q.y - p.y, q.x - p.x, p.y];
 }
 
@@ -101,11 +86,6 @@ export function matchSegments(p1: Vector2, q1: Vector2, p2: Vector2, q2: Vector2
  */
 export function isReflecting(t: Affine2D): boolean {
   return t[0] * t[4] - t[1] * t[3] < 0;
-}
-
-/** Uniform scale factor of the transform's linear part. */
-export function scaleOf(t: Affine2D): number {
-  return Math.sqrt(Math.abs(t[0] * t[4] - t[1] * t[3]));
 }
 
 /** Intersection of the infinite lines p1→q1 and p2→q2. */

@@ -90,7 +90,7 @@ export class Rational {
  * An axis intercept: either an exact rational multiple of the lattice constant,
  * or `null` meaning the plane is parallel to that axis (intercept at infinity).
  */
-export type Intercept = Rational | null;
+type Intercept = Rational | null;
 
 /** The three axis intercepts defining a plane. */
 export type Intercepts = readonly [Intercept, Intercept, Intercept];
@@ -288,7 +288,7 @@ export function formatIndex(index: number): string {
 }
 
 /** Formats a triple with the given brackets, e.g. "(1̄10)" or "[111]". */
-export function formatTriple(indices: IndexTriple, open: string, close: string): string {
+function formatTriple(indices: IndexTriple, open: string, close: string): string {
   const separator = indices.some((index) => Math.abs(index) >= 10) ? " " : "";
   return `${open}${indices.map(formatIndex).join(separator)}${close}`;
 }
@@ -509,7 +509,7 @@ function sortAroundNormal(points: readonly Vector3[], normal: Vector3): Vector3[
  * @param latticeConstant - cube edge length in model units
  * @param cellRange - how many cells out from the origin to search, per axis
  */
-export function atomsInPlane(
+function atomsInPlane(
   indices: IndexTriple,
   basis: readonly Vector3[],
   latticeConstant: number,
@@ -577,7 +577,7 @@ export function planarDensity(
  * The area of the 2D primitive cell of the atoms lying in the (hkl) plane,
  * found as |v₁ × v₂| for the two shortest independent in-plane lattice vectors.
  */
-export function inPlaneCellArea(
+function inPlaneCellArea(
   indices: IndexTriple,
   basis: readonly Vector3[],
   latticeConstant: number,

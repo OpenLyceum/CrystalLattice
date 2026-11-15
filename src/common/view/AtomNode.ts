@@ -71,7 +71,7 @@ export class AtomNode extends Circle {
  * A radial gradient standing in for a lit sphere: a bright highlight up and to
  * the left, falling to a darkened rim.
  */
-export function sphereGradient(radius: number, color: Color): RadialGradient {
+function sphereGradient(radius: number, color: Color): RadialGradient {
   const highlightOffset = radius * 0.35;
   return new RadialGradient(-highlightOffset, -highlightOffset, radius * 0.05, 0, 0, radius)
     .addColorStop(0, color.colorUtilsBrighter(0.7).toCSS())

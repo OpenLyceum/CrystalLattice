@@ -55,7 +55,7 @@ export type CellAtom = {
 };
 
 /** Avogadro's number, mol⁻¹ — used for the theoretical-density readout. */
-export const AVOGADRO = 6.02214076e23;
+const AVOGADRO = 6.02214076e23;
 
 /**
  * Classifies a fractional position and returns the fraction of the atom that
@@ -240,15 +240,6 @@ export function theoreticalDensity(structure: CubicStructure, edgeLengthNm: numb
   }
   const edgeCm = edgeLengthNm * 1e-7; // 1 nm = 1e-7 cm
   return (atomsPerCell(structure) * molarMass) / (AVOGADRO * edgeCm ** 3);
-}
-
-/**
- * Expands the conventional cell into world positions in model units, keeping
- * every drawn sphere — including the ones only fractionally owned, since the
- * point of the picture is that they stick out of the cell.
- */
-export function cellAtomPositions(structure: CubicStructure, edgeLength: number): Vector3[] {
-  return generateCellAtoms(structure).map((atom) => atom.fractionalPosition.timesScalar(edgeLength));
 }
 
 /** The eight corners of the cubic cell in model units, for drawing its wireframe. */
