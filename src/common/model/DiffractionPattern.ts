@@ -128,7 +128,10 @@ export function computeDiffraction(points: readonly Vector2[], kRange: number, r
   return { intensities, resolution, kRange, peakIntensity: peak };
 }
 
-/** Reads one grid cell's normalized intensity. Returns 0 outside the grid. */
+/**
+ * Reads one grid cell's normalized intensity. Returns 0 outside the grid.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function intensityAt(result: DiffractionResult, column: number, row: number): number {
   if (column < 0 || row < 0 || column >= result.resolution || row >= result.resolution) {
     return 0;
@@ -136,7 +139,10 @@ export function intensityAt(result: DiffractionResult, column: number, row: numb
   return result.intensities[row * result.resolution + column] ?? 0;
 }
 
-/** The k-space coordinate of a grid cell's centre. */
+/**
+ * The k-space coordinate of a grid cell's centre.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function kVectorAt(result: DiffractionResult, column: number, row: number): Vector2 {
   const step = result.resolution > 1 ? (2 * result.kRange) / (result.resolution - 1) : 0;
   return new Vector2(-result.kRange + column * step, -result.kRange + row * step);

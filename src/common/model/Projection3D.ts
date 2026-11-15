@@ -169,7 +169,10 @@ export class Projection3D {
   }
 }
 
-/** Pitch beyond ±80° looks down the cell's own axis and reads as a flat square. */
+/**
+ * Pitch beyond ±80° looks down the cell's own axis and reads as a flat square.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export const MAX_PITCH = (80 * Math.PI) / 180;
 
 /** Default camera yaw — a three-quarter view that shows three cube faces. */
@@ -181,7 +184,10 @@ export const DEFAULT_PITCH = (20 * Math.PI) / 180;
 /** Drag sensitivity: one screen pixel of drag ≈ 0.5° of rotation. */
 const DEFAULT_RADIANS_PER_PIXEL = Math.PI / 360;
 
-/** Restricts a pitch angle to ±{@link MAX_PITCH}. */
+/**
+ * Restricts a pitch angle to ±{@link MAX_PITCH}.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function clampPitch(pitch: number): number {
   return Math.max(-MAX_PITCH, Math.min(MAX_PITCH, pitch));
 }

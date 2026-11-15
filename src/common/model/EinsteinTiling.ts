@@ -68,6 +68,7 @@ function hexPoint(x: number, y: number): Vector2 {
 /**
  * The hat: a 13-gon assembled from eight kites of the [3.4.6.4] Laves tiling,
  * given here in the hexagonal coordinates that make every vertex exact.
+ * @internal Exported for unit tests; not part of the application API.
  */
 export const HAT_OUTLINE: readonly Vector2[] = [
   hexPoint(0, 0),
@@ -89,6 +90,7 @@ export const HAT_OUTLINE: readonly Vector2[] = [
  * The spectre, "Tile(1,1)": the equilateral member of the hat's continuous
  * family, whose fourteen equal edges let it tile with a single chirality — no
  * reflections needed. Shown on the screen alongside the hat for comparison.
+ * @internal Exported for unit tests; not part of the application API.
  */
 export const SPECTRE_OUTLINE: readonly Vector2[] = [
   new Vector2(0, 0),

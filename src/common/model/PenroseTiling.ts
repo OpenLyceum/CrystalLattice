@@ -82,6 +82,7 @@ function rhombusTypeOf(triangleType: RobinsonTriangleType): RhombusType {
  * a decagon of unit radius. Alternate triangles are mirrored so adjacent halves
  * glue into whole rhombi, giving a patch with exact 10-fold symmetry to start
  * from — the symmetry the diffraction pattern later makes quantitative.
+ * @internal Exported for unit tests; not part of the application API.
  */
 export function penroseSeed(radius = 1, type: RobinsonTriangleType = RobinsonTriangleType.ACUTE): RobinsonTriangle[] {
   const triangles: RobinsonTriangle[] = [];
@@ -114,6 +115,7 @@ export function penroseSeed(radius = 1, type: RobinsonTriangleType = RobinsonTri
  *   OBTUSE: cut the leg b→a at q = b + (a − b)/φ and the base b→c at
  *           r = b + (c − b)/φ, giving obtuse (apex r, base c→a),
  *           obtuse (apex q, base r→b) and acute (apex r, base q→a)
+ * @internal Exported for unit tests; not part of the application API.
  */
 export function inflate(triangles: readonly RobinsonTriangle[]): RobinsonTriangle[] {
   const result: RobinsonTriangle[] = [];
@@ -299,7 +301,10 @@ const THICK_CORNERS = [3, 2]; // apex 108°, base 72° — from obtuse Robinson 
 /** A full turn, in the same 36° units. */
 const FULL_TURN_UNITS = 10;
 
-/** The corner angle (in 36° units) at vertex `index` of a rhombus. */
+/**
+ * The corner angle (in 36° units) at vertex `index` of a rhombus.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function cornerAngleUnits(rhombus: PenroseRhombus, index: number): number {
   const corners = rhombus.type === RhombusType.THIN ? THIN_CORNERS : THICK_CORNERS;
   // Vertices alternate between the two apexes (even indices) and the two
@@ -329,6 +334,7 @@ function cyclicKey(sequence: readonly number[]): string {
  * halves) are inflated and unioned, because a single seed's tiling need not
  * contain every legal configuration. The result is stable from four inflations
  * onward, so five is used for headroom.
+ * @internal Exported for unit tests; not part of the application API.
  */
 export function vertexAtlas(): ReadonlySet<string> {
   if (atlasCache !== null) {
@@ -392,6 +398,7 @@ function completeVertexStars(rhombi: readonly PenroseRhombus[]): Set<string> {
  * rather than only when the vertex is full.
  *
  * @param corners - corner angles in 36° units, in order around the vertex
+ * @internal Exported for unit tests; not part of the application API.
  */
 export function isVertexStarLegal(corners: readonly number[]): boolean {
   const total = corners.reduce((sum, angle) => sum + angle, 0);
@@ -460,7 +467,10 @@ const CORNER_UNIT_RADIANS = Math.PI / 5;
  */
 const BEARING_TOLERANCE = 1e-3;
 
-/** The apex angle of a rhombus, in 36° units — 1 for thin (36°), 3 for thick (108°). */
+/**
+ * The apex angle of a rhombus, in 36° units — 1 for thin (36°), 3 for thick (108°).
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function apexAngleUnits(type: RhombusType): number {
   return (type === RhombusType.THIN ? THIN_CORNERS[0] : THICK_CORNERS[0]) ?? 0;
 }
@@ -488,12 +498,13 @@ function cornerBearing(rhombus: PenroseRhombus, index: number): number {
 }
 
 /** One edge of a patch, as it is wound in the tile that owns it. */
-export type PatchEdge = { readonly from: Vector2; readonly to: Vector2 };
+type PatchEdge = { readonly from: Vector2; readonly to: Vector2 };
 
 /**
  * The edges only one tile touches — the patch boundary, and therefore every
  * place a next tile could attach. An interior edge is shared by exactly two
  * tiles and is already spoken for.
+ * @internal Exported for unit tests; not part of the application API.
  */
 export function openEdges(rhombi: readonly PenroseRhombus[], tolerance = 1e-6): PatchEdge[] {
   const counts = new Map<string, { edge: PatchEdge; count: number }>();
@@ -636,14 +647,17 @@ function extentAlong(polygon: readonly Vector2[], axis: Vector2): [number, numbe
 }
 
 /** One rhombus corner as it meets a vertex. */
-export type VertexCorner = {
+type VertexCorner = {
   /** The corner angle, in 36° units. */
   readonly angle: number;
   /** Bearing of the edge that bounds the corner counter-clockwise-first. */
   readonly direction: number;
 };
 
-/** Every corner of `rhombi` that meets `vertex`, unsorted. */
+/**
+ * Every corner of `rhombi` that meets `vertex`, unsorted.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function cornersAtVertex(rhombi: readonly PenroseRhombus[], vertex: Vector2, tolerance = 1e-6): VertexCorner[] {
   const corners: VertexCorner[] = [];
 
@@ -667,6 +681,7 @@ export function cornersAtVertex(rhombi: readonly PenroseRhombus[], vertex: Vecto
  * filled arc, each starting where an empty wedge left off. That start matters:
  * {@link isVertexStarLegal} reads a partial run as a contiguous arc of some
  * legal star, which is only meaningful if the run really is contiguous.
+ * @internal Exported for unit tests; not part of the application API.
  */
 export function vertexArcs(corners: readonly VertexCorner[]): VertexCorner[][] {
   if (corners.length === 0) {
@@ -732,6 +747,7 @@ function normalizeAngle(angle: number): number {
  * Corners in a *different* arc at the same vertex are checked on their own: they
  * sit behind a wedge the candidate does not touch, and each must still be
  * completable for the vertex as a whole to have a future.
+ * @internal Exported for unit tests; not part of the application API.
  */
 export function isPatchPlacementLegal(
   rhombi: readonly PenroseRhombus[],

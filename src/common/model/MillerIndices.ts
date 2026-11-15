@@ -163,6 +163,7 @@ export function interceptsFromIndices(indices: IndexTriple): Intercepts {
  * Reduces a direction's components to the smallest integer triple [uvw],
  * clearing denominators first and then dividing out the common factor.
  * Unlike planes, no reciprocal is taken.
+ * @internal Exported for unit tests; not part of the application API.
  */
 export function deriveDirectionIndices(components: readonly [Rational, Rational, Rational]): {
   readonly clearingMultiplier: number;
@@ -177,7 +178,10 @@ export function deriveDirectionIndices(components: readonly [Rational, Rational,
   return { clearingMultiplier, cleared, indices };
 }
 
-/** Reduces a dragged direction vector to [uvw] via a rational approximation. */
+/**
+ * Reduces a dragged direction vector to [uvw] via a rational approximation.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function directionIndicesFromVector(vector: Vector3, maxDenominator = 12): IndexTriple {
   const components = [
     Rational.fromNumber(vector.x, maxDenominator),
@@ -282,7 +286,10 @@ export function equivalentFamily(indices: IndexTriple): IndexTriple[] {
 /** Combining overline (U+0305) — renders a negative index as the crystallographer's bar. */
 const COMBINING_OVERLINE = "̅";
 
-/** Formats one index with a bar over it when negative: −1 → "1̄". */
+/**
+ * Formats one index with a bar over it when negative: −1 → "1̄".
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function formatIndex(index: number): string {
   return index < 0 ? `${Math.abs(index)}${COMBINING_OVERLINE}` : `${index}`;
 }
@@ -318,6 +325,7 @@ export function formatDirectionFamily(indices: IndexTriple): string {
  * optional separating comma or space, and negatives written either with a
  * leading minus or with a combining overline: "(1-10)", "1̄10", "[1,-1,0]".
  * Returns null when the text is not three indices.
+ * @internal Exported for unit tests; not part of the application API.
  */
 export function parseIndexTriple(text: string): IndexTriple | null {
   const stripped = text

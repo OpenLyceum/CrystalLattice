@@ -38,7 +38,10 @@ export const LayerPosition = {
 
 export type LayerPosition = (typeof LayerPosition)[keyof typeof LayerPosition];
 
-/** Ordered so `LAYER_ORDER[(index + 1) % 3]` is the "next" hollow. */
+/**
+ * Ordered so `LAYER_ORDER[(index + 1) % 3]` is the "next" hollow.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export const LAYER_ORDER: readonly LayerPosition[] = [LayerPosition.A, LayerPosition.B, LayerPosition.C];
 
 /** How a stacking sequence is classified. */
@@ -58,7 +61,10 @@ export type StackingType = (typeof StackingType)[keyof typeof StackingType];
 /** The ideal hard-sphere axial ratio, c/a = √(8/3) ≈ 1.633. */
 export const IDEAL_C_OVER_A = Math.sqrt(8 / 3);
 
-/** The maximum packing fraction in three dimensions, π/(3√2) ≈ 0.7405. */
+/**
+ * The maximum packing fraction in three dimensions, π/(3√2) ≈ 0.7405.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export const MAXIMUM_PACKING_FRACTION = Math.PI / (3 * Math.SQRT2);
 
 /** Measured c/a for real HCP metals, for the "compare to real crystals" table. */
@@ -74,6 +80,7 @@ export const REAL_HCP_METALS: ReadonlyArray<{ readonly symbol: string; readonly 
 /**
  * The in-plane offset of a layer position, in units where the in-plane lattice
  * constant is `a`.
+ * @internal Exported for unit tests; not part of the application API.
  */
 export function layerOffset(position: LayerPosition, a: number): Vector2 {
   const index = LAYER_ORDER.indexOf(position);
@@ -266,7 +273,10 @@ export function hcpInterlayerSpacing(a: number, cOverA: number): number {
   return (a * cOverA) / 2;
 }
 
-/** Interlayer spacing for ideal close packing (both FCC and ideal HCP): a·√(2/3). */
+/**
+ * Interlayer spacing for ideal close packing (both FCC and ideal HCP): a·√(2/3).
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function idealInterlayerSpacing(a: number): number {
   return a * Math.sqrt(2 / 3);
 }

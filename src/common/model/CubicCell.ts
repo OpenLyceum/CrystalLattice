@@ -60,6 +60,7 @@ const AVOGADRO = 6.02214076e23;
 /**
  * Classifies a fractional position and returns the fraction of the atom that
  * belongs to this cell. Boundary coordinates are those equal to 0 or 1.
+ * @internal Exported for unit tests; not part of the application API.
  */
 export function sharingFractionFor(fractionalPosition: Vector3): number {
   const onBoundary = (value: number): boolean => Math.abs(value) < 1e-9 || Math.abs(value - 1) < 1e-9;
@@ -70,7 +71,10 @@ export function sharingFractionFor(fractionalPosition: Vector3): number {
   return 1 / 2 ** boundaryCount;
 }
 
-/** Names the site kind implied by how many coordinates are on a cell face. */
+/**
+ * Names the site kind implied by how many coordinates are on a cell face.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function siteKindFor(fractionalPosition: Vector3): SiteKind {
   switch (sharingFractionFor(fractionalPosition)) {
     case 1 / 8:
@@ -115,17 +119,26 @@ const FACE_CENTERS: readonly CellAtom[] = [
   atomAt(1, 0.5, 0.5),
 ];
 
-/** Simple cubic: corner atoms only. n = 8 × 1/8 = 1. */
+/**
+ * Simple cubic: corner atoms only. n = 8 × 1/8 = 1.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function generateSC(): CellAtom[] {
   return [...CORNERS];
 }
 
-/** Body-centred cubic: corners plus one wholly-owned atom at the centre. n = 2. */
+/**
+ * Body-centred cubic: corners plus one wholly-owned atom at the centre. n = 2.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function generateBCC(): CellAtom[] {
   return [...CORNERS, atomAt(0.5, 0.5, 0.5)];
 }
 
-/** Face-centred cubic: corners plus six half-owned face atoms. n = 4. */
+/**
+ * Face-centred cubic: corners plus six half-owned face atoms. n = 4.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function generateFCC(): CellAtom[] {
   return [...CORNERS, ...FACE_CENTERS];
 }
@@ -187,7 +200,10 @@ export function touchingRadius(structure: CubicStructure, edgeLength: number): n
   }
 }
 
-/** Inverse of {@link touchingRadius}: the edge length at which radius `r` touches. */
+/**
+ * Inverse of {@link touchingRadius}: the edge length at which radius `r` touches.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function touchingEdgeLength(structure: CubicStructure, radius: number): number {
   switch (structure) {
     case CubicStructure.SIMPLE_CUBIC:
@@ -216,7 +232,10 @@ export function packingFactor(structure: CubicStructure, edgeLength: number, rad
   return (atomsPerCell(structure) * (4 / 3) * Math.PI * radius ** 3) / edgeLength ** 3;
 }
 
-/** The maximum (hard-sphere) APF for a structure: 0.524, 0.680, 0.740. */
+/**
+ * The maximum (hard-sphere) APF for a structure: 0.524, 0.680, 0.740.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function maximumPackingFactor(structure: CubicStructure): number {
   return packingFactor(structure, 1, touchingRadius(structure, 1));
 }
