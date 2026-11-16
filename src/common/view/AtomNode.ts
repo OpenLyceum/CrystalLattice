@@ -114,7 +114,7 @@ export function createSharingWedge(radius: number, fraction: number, fill: TColo
   const start = -Math.PI / 2;
   const end = start + 2 * Math.PI * fraction;
   const steps = Math.max(2, Math.ceil(24 * fraction));
-  const points: Array<[number, number]> = [[0, 0]];
+  const points: [number, number][] = [[0, 0]];
   for (let i = 0; i <= steps; i++) {
     const angle = start + ((end - start) * i) / steps;
     points.push([radius * Math.cos(angle), radius * Math.sin(angle)]);

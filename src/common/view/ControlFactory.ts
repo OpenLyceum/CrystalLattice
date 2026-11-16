@@ -139,7 +139,7 @@ export function createComboBox<T>(
   accessibleName: TReadOnlyProperty<string>,
   options?: ComboBoxOptions,
 ): ComboBox<T> {
-  const comboItems: Array<ComboBoxItem<T>> = items.map((item) => ({
+  const comboItems: ComboBoxItem<T>[] = items.map((item) => ({
     value: item.value,
     createNode: () =>
       new Text(item.label, {

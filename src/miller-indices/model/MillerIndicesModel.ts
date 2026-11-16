@@ -41,7 +41,7 @@ export const MillerMode = {
 export type MillerMode = (typeof MillerMode)[keyof typeof MillerMode];
 
 /** The worked examples the preset buttons load — the common exam-question set. */
-export const PLANE_PRESETS: ReadonlyArray<IndexTriple> = [
+export const PLANE_PRESETS: readonly IndexTriple[] = [
   [1, 0, 0],
   [1, 1, 0],
   [1, 1, 1],
@@ -49,7 +49,7 @@ export const PLANE_PRESETS: ReadonlyArray<IndexTriple> = [
   [1, -1, 0],
 ];
 
-export const DIRECTION_PRESETS: ReadonlyArray<IndexTriple> = [
+export const DIRECTION_PRESETS: readonly IndexTriple[] = [
   [1, 0, 0],
   [1, 1, 0],
   [1, 1, 1],

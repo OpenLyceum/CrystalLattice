@@ -35,7 +35,7 @@ export abstract class Projected3DNode extends Node {
   protected readonly contentNode: Node;
 
   private readonly rebuildListener: () => void;
-  private readonly dependencies: ReadonlyArray<TReadOnlyProperty<unknown>>;
+  private readonly dependencies: readonly TReadOnlyProperty<unknown>[];
 
   /**
    * @param modelScale - model units → view pixels
@@ -44,7 +44,7 @@ export abstract class Projected3DNode extends Node {
    */
   protected constructor(
     modelScale: number,
-    dependencies: ReadonlyArray<TReadOnlyProperty<unknown>>,
+    dependencies: readonly TReadOnlyProperty<unknown>[],
     providedOptions?: Projected3DNodeOptions,
   ) {
     super(providedOptions);
