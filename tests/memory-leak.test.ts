@@ -13,7 +13,9 @@
 
 import { describe, expect, it } from "vitest";
 import { AperiodicOrderModel } from "../src/aperiodic-order/model/AperiodicOrderModel.js";
+import { DiffractionNode } from "../src/aperiodic-order/view/DiffractionNode.js";
 import { PlacementNode } from "../src/aperiodic-order/view/PlacementNode.js";
+import { TilingNode } from "../src/aperiodic-order/view/TilingNode.js";
 import { ClosePackingModel } from "../src/close-packing/model/ClosePackingModel.js";
 import { AtomNode } from "../src/common/view/AtomNode.js";
 import { CubicSystemsModel } from "../src/cubic-systems/model/CubicSystemsModel.js";
@@ -71,14 +73,24 @@ describe("Memory leak regression", () => {
   });
 });
 
-// View nodes that link to longer-lived Properties. The board shares one model,
-// so a PlacementNode is only collected if dispose() unlinks it from that model;
-// AtomNode links to the shared color profile.
+// View nodes that link to longer-lived Properties. Shared screen models outlive
+// every case so dispose() must unlink; AtomNode links to the shared color profile.
 const SHARED_APERIODIC_MODEL = new AperiodicOrderModel();
 const PLACEMENT_BOARD_SIZE = 400;
+const VIEW_SIZE = 400;
 const ATOM_RADIUS = 10;
 
 describeDisposalLeaks([
   { name: "AtomNode", create: () => new AtomNode(ATOM_RADIUS) },
   { name: "PlacementNode", create: () => new PlacementNode(SHARED_APERIODIC_MODEL, PLACEMENT_BOARD_SIZE) },
+  {
+    name: "DiffractionNode",
+    create: () => new DiffractionNode(SHARED_APERIODIC_MODEL.diffractionProperty, VIEW_SIZE),
+    keepAlive: () => [SHARED_APERIODIC_MODEL],
+  },
+  {
+    name: "TilingNode",
+    create: () => new TilingNode(SHARED_APERIODIC_MODEL, VIEW_SIZE),
+    keepAlive: () => [SHARED_APERIODIC_MODEL],
+  },
 ]);
