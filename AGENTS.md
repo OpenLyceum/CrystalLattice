@@ -89,9 +89,6 @@ A11y strings live under the `a11y` key per screen in each locale JSON, reached t
 - `src/common/model/` holds pure geometry modules rather than `*Model.ts` screen models. This is a
   deliberate split from the fleet's usual one-model-per-screen shape: the pure layer is what makes
   the physics testable without a DOM, and each screen still has its own Property-holding model.
-- **No hardcoded colors.** The neutral overlays (sharing wedge, fraction badge) now come from
-  `sharingWedgeColorProperty` / `sharingBadgeColorProperty` in `CrystalLatticeColors.ts`, so there is
-  no color carve-out; keep new colors in the profile too.
 - `memory-leak:Projected3DNode` — abstract base; dispose is exercised by concrete 3D views, but those need ScreenView soak (see below).
 - `memory-leak:CubicCellNode` — keepAlive against CubicSystemsModel retains the node after dispose in vitest; needs ScreenView-owned soak.
 - `memory-leak:Lattice2DNode` — keepAlive against Lattices2DModel retains the node after dispose in vitest; needs ScreenView-owned soak.
