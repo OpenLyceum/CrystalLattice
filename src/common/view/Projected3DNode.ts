@@ -18,7 +18,7 @@
 
 import { Property, type TReadOnlyProperty } from "scenerystack/axon";
 import type { Vector3 } from "scenerystack/dot";
-import { DragListener, KeyboardListener, Node, type NodeOptions } from "scenerystack/scenery";
+import { DragListener, KeyboardListener, Node, type NodeOptions, type TInputListener } from "scenerystack/scenery";
 import CrystalLatticeHotkeyData from "../CrystalLatticeHotkeyData.js";
 import { DEFAULT_PITCH, DEFAULT_YAW, Projection3D } from "../model/Projection3D.js";
 
@@ -36,6 +36,8 @@ export abstract class Projected3DNode extends Node {
 
   private readonly rebuildListener: () => void;
   private readonly dependencies: readonly TReadOnlyProperty<unknown>[];
+  /** Disposed with the node: the KeyboardListener's hotkeys derive from global key strings. */
+  private readonly orbitListeners: readonly (TInputListener & { dispose(): void })[];
 
   /**
    * @param modelScale - model units → view pixels
@@ -64,29 +66,29 @@ export abstract class Projected3DNode extends Node {
     // Drag to orbit. `applyOffset: false` keeps the listener from moving this
     // Node itself — the drag drives the camera, and the camera drives the
     // children's positions.
-    this.addInputListener(
-      new DragListener({
-        applyOffset: false,
-        drag: (_event, listener) => {
-          const delta = listener.modelDelta;
-          this.cameraProperty.value = this.cameraProperty.value.rotatedBy(delta.x, delta.y);
-        },
-      }),
-    );
+    const orbitDragListener = new DragListener({
+      applyOffset: false,
+      drag: (_event, listener) => {
+        const delta = listener.modelDelta;
+        this.cameraProperty.value = this.cameraProperty.value.rotatedBy(delta.x, delta.y);
+      },
+    });
 
     // Arrow keys orbit the same way: focusable callers (ScreenViews set
     // tagName/focusable/accessibleName) must be operable without a pointer.
-    this.addInputListener(
-      new KeyboardListener({
-        keyStringProperties: CrystalLatticeHotkeyData.ROTATE_VIEW.keyStringProperties,
-        fire: (_event, keysPressed) => {
-          const dx =
-            keysPressed === "arrowLeft" ? -ORBIT_KEY_DELTA : keysPressed === "arrowRight" ? ORBIT_KEY_DELTA : 0;
-          const dy = keysPressed === "arrowUp" ? -ORBIT_KEY_DELTA : keysPressed === "arrowDown" ? ORBIT_KEY_DELTA : 0;
-          this.cameraProperty.value = this.cameraProperty.value.rotatedBy(dx, dy);
-        },
-      }),
-    );
+    const orbitKeyboardListener = new KeyboardListener({
+      keyStringProperties: CrystalLatticeHotkeyData.ROTATE_VIEW.keyStringProperties,
+      fire: (_event, keysPressed) => {
+        const dx = keysPressed === "arrowLeft" ? -ORBIT_KEY_DELTA : keysPressed === "arrowRight" ? ORBIT_KEY_DELTA : 0;
+        const dy = keysPressed === "arrowUp" ? -ORBIT_KEY_DELTA : keysPressed === "arrowDown" ? ORBIT_KEY_DELTA : 0;
+        this.cameraProperty.value = this.cameraProperty.value.rotatedBy(dx, dy);
+      },
+    });
+
+    this.orbitListeners = [orbitDragListener, orbitKeyboardListener];
+    for (const listener of this.orbitListeners) {
+      this.addInputListener(listener);
+    }
   }
 
   /**
@@ -115,7 +117,14 @@ export abstract class Projected3DNode extends Node {
     for (const dependency of this.dependencies) {
       dependency.unlink(this.rebuildListener);
     }
+    for (const listener of this.orbitListeners) {
+      this.removeInputListener(listener);
+      listener.dispose();
+    }
     this.cameraProperty.dispose();
+    // Rebuilt content links to sim-lifetime string Properties (Text labels), and
+    // Node.dispose() does not dispose children.
+    this.contentNode.disposeSubtree();
     super.dispose();
   }
 }

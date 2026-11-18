@@ -32,7 +32,7 @@
 import { Multilink, type TReadOnlyProperty, type UnknownMultilink } from "scenerystack/axon";
 import { Vector2, Vector3 } from "scenerystack/dot";
 import { Shape } from "scenerystack/kite";
-import { Circle, DragListener, KeyboardListener, Node, Path, Text } from "scenerystack/scenery";
+import { Circle, DragListener, KeyboardListener, Node, Path, Text, type TInputListener } from "scenerystack/scenery";
 import { ArrowNode, PhetFont } from "scenerystack/scenery-phet";
 import CrystalLatticeColors from "../../CrystalLatticeColors.js";
 import {
@@ -110,6 +110,8 @@ export class MillerCellNode extends Projected3DNode {
   private readonly handleLayer = new Node();
   private readonly interceptHandles: readonly Circle[];
   private readonly directionHandle: Circle;
+  /** Disposed with the node: KeyboardListener hotkeys derive from global key strings. */
+  private readonly handleListeners: { dispose(): void }[] = [];
   /** Accumulate small key moves before snapping, so quantization cannot trap the tip. */
   private keyboardDirectionTarget: Vector3 | null = null;
   private keyboardDirectionIndices: IndexTriple | null = null;
@@ -243,7 +245,8 @@ export class MillerCellNode extends Projected3DNode {
     handle.touchArea = handle.localBounds.dilated(HANDLE_TOUCH_DILATION);
     handle.mouseArea = handle.localBounds.dilated(HANDLE_MOUSE_DILATION);
 
-    handle.addInputListener(
+    this.addHandleListener(
+      handle,
       new DragListener({
         applyOffset: false,
         drag: (event) => {
@@ -257,7 +260,8 @@ export class MillerCellNode extends Projected3DNode {
 
     // Both axis pairs step the track: which screen direction an axis points in
     // depends entirely on where the student has orbited the cell to.
-    handle.addInputListener(
+    this.addHandleListener(
+      handle,
       new KeyboardListener({
         keyStringProperties: [
           ...CrystalLatticeHotkeyData.STEP_INTERCEPT.keyStringProperties,
@@ -268,6 +272,12 @@ export class MillerCellNode extends Projected3DNode {
     );
 
     return handle;
+  }
+
+  /** Attaches an input listener to a handle and records it for dispose(). */
+  private addHandleListener(handle: Circle, listener: TInputListener & { dispose(): void }): void {
+    handle.addInputListener(listener);
+    this.handleListeners.push(listener);
   }
 
   /** Moves an intercept by one stop, or to either end of its track. */
@@ -329,14 +339,16 @@ export class MillerCellNode extends Projected3DNode {
     handle.touchArea = handle.localBounds.dilated(HANDLE_TOUCH_DILATION);
     handle.mouseArea = handle.localBounds.dilated(HANDLE_MOUSE_DILATION);
 
-    handle.addInputListener(
+    this.addHandleListener(
+      handle,
       new DragListener({
         applyOffset: false,
         drag: (event) => this.dragDirectionTo(this.globalToLocalPoint(event.pointer.point)),
       }),
     );
 
-    handle.addInputListener(
+    this.addHandleListener(
+      handle,
       new KeyboardListener({
         keyStringProperties: CrystalLatticeHotkeyData.MOVE_DIRECTION_TIP.keyStringProperties,
         fire: (_event, keysPressed) => this.nudgeDirection(keysPressed),
@@ -581,6 +593,11 @@ export class MillerCellNode extends Projected3DNode {
 
   public override dispose(): void {
     this.modelMultilink.dispose();
+    for (const listener of this.handleListeners) {
+      listener.dispose();
+    }
+    // The handles link to sim-lifetime accessible-name Properties.
+    this.handleLayer.disposeSubtree();
     super.dispose();
   }
 }
