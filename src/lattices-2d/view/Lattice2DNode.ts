@@ -73,6 +73,11 @@ export class Lattice2DNode extends Node {
   private readonly handleLayer = new Node();
   private readonly handleA1: Circle;
   private readonly handleA2: Circle;
+  /**
+   * Disposed with the node: the KeyboardDragListeners' hotkeys link to scenery's
+   * module-level key-string Properties, which would otherwise pin the handles.
+   */
+  private readonly handleListeners: { node: Node; listener: DragListener | KeyboardDragListener }[] = [];
 
   private readonly multilink: UnknownMultilink;
 
@@ -283,25 +288,26 @@ export class Lattice2DNode extends Node {
     handle.touchArea = handle.localBounds.dilated(HANDLE_TOUCH_DILATION);
     handle.mouseArea = handle.localBounds.dilated(HANDLE_MOUSE_DILATION);
 
-    handle.addInputListener(
-      new DragListener({
-        applyOffset: false,
-        drag: (event) => {
-          this.applyTipFromView(this.globalToLocalPoint(event.pointer.point), isFirstVector);
-        },
-      }),
-    );
+    const dragListener = new DragListener({
+      applyOffset: false,
+      drag: (event) => {
+        this.applyTipFromView(this.globalToLocalPoint(event.pointer.point), isFirstVector);
+      },
+    });
 
     // Same model write as the pointer drag. Arrows are not also bound by a KeyboardListener.
-    handle.addInputListener(
-      new KeyboardDragListener({
-        dragDelta: KEYBOARD_DRAG_DELTA_PX,
-        shiftDragDelta: KEYBOARD_SHIFT_DRAG_DELTA_PX,
-        drag: (_event, listener) => {
-          this.applyTipFromView(handle.center.plus(listener.modelDelta), isFirstVector);
-        },
-      }),
-    );
+    const keyboardDragListener = new KeyboardDragListener({
+      dragDelta: KEYBOARD_DRAG_DELTA_PX,
+      shiftDragDelta: KEYBOARD_SHIFT_DRAG_DELTA_PX,
+      drag: (_event, listener) => {
+        this.applyTipFromView(handle.center.plus(listener.modelDelta), isFirstVector);
+      },
+    });
+
+    for (const listener of [dragListener, keyboardDragListener]) {
+      handle.addInputListener(listener);
+      this.handleListeners.push({ node: handle, listener });
+    }
 
     return handle;
   }
@@ -341,6 +347,16 @@ export class Lattice2DNode extends Node {
 
   public override dispose(): void {
     this.multilink.dispose();
+    for (const { node, listener } of this.handleListeners) {
+      node.removeInputListener(listener);
+      listener.dispose();
+    }
+    // The handles link to their accessible-name Properties and the rebuilt
+    // layers hold AtomNodes that link color Properties; Node.dispose() does not
+    // dispose children.
+    for (const layer of [this.overlayLayer, this.pointLayer, this.vectorLayer, this.handleLayer]) {
+      layer.disposeSubtree();
+    }
     super.dispose();
   }
 }

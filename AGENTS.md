@@ -89,9 +89,6 @@ A11y strings live under the `a11y` key per screen in each locale JSON, reached t
 - `src/common/model/` holds pure geometry modules rather than `*Model.ts` screen models. This is a
   deliberate split from the fleet's usual one-model-per-screen shape: the pure layer is what makes
   the physics testable without a DOM, and each screen still has its own Property-holding model.
-- `memory-leak:CubicCellNode` — keepAlive against CubicSystemsModel retains the node after dispose in vitest; needs ScreenView-owned soak.
-- `memory-leak:Lattice2DNode` — keepAlive against Lattices2DModel retains the node after dispose in vitest; needs ScreenView-owned soak.
-- `memory-leak:LayerStackNode` — keepAlive against ClosePackingModel retains the node after dispose in vitest; needs ScreenView-owned soak.
 
 ## Testing
 
@@ -108,7 +105,7 @@ A11y strings live under the `a11y` key per screen in each locale JSON, reached t
 | `tests/browser/review-regressions.spec.ts` | Actual snap/drag/palette/slot/direction controls, plane-only rows and translated actions |
 | `tests/AperiodicTiling.test.ts` | Penrose ratios → φ, hat congruence and φ⁴ reflection ratio, hand-placement legality |
 | `tests/DiffractionPattern.test.ts` | 4-fold square, 6-fold hexagonal, 10-fold Penrose |
-| `tests/memory-leak.test.ts` | WeakRef + `forceGC` regression across all five screen models, plus view nodes (`MillerCellNode` with listener counts on its string, accessible-name, hotkey and model Properties) |
+| `tests/memory-leak.test.ts` | WeakRef + `forceGC` regression across all five screen models, plus view nodes (`MillerCellNode`, `CubicCellNode`, `LayerStackNode`, `Lattice2DNode` with listener counts on their string, accessible-name, hotkey, manually linked color and model Properties) |
 | `tests/fuzz/fuzz.spec.ts` | Optional Playwright fuzz smoke via joist `?fuzz` |
 
 Put unit tests only under root `tests/`, mirroring `src/` — never co-located, never `__tests__/`.
