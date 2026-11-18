@@ -7,7 +7,6 @@
 
 import {
   BasicActionsKeyboardHelpSection,
-  MoveDraggableItemsKeyboardHelpSection,
   SliderControlsKeyboardHelpSection,
   TwoColumnKeyboardHelpContent,
 } from "scenerystack/scenery-phet";
@@ -16,11 +15,7 @@ import { createView3DKeyboardHelpSection } from "../../common/view/CrystalLattic
 export class ClosePackingKeyboardHelpContent extends TwoColumnKeyboardHelpContent {
   public constructor() {
     super(
-      [
-        createView3DKeyboardHelpSection(),
-        new MoveDraggableItemsKeyboardHelpSection(),
-        new SliderControlsKeyboardHelpSection(),
-      ],
+      [createView3DKeyboardHelpSection(), new SliderControlsKeyboardHelpSection()],
       [new BasicActionsKeyboardHelpSection({ withCheckboxContent: true })],
     );
   }
