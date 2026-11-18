@@ -176,6 +176,8 @@ export class PlacementNode extends Node {
     const ghost = new Path(shape, { fill: fillFor(type), opacity: 0.7, visible: false });
     this.ghostLayer.addChild(ghost);
 
+    // Pointer-only: dragging a tile to a slot. Tiles and slots are buttons with FireListeners, so
+    // Enter or Space arms a shape and places it.
     tile.addInputListener(
       new DragListener({
         applyOffset: false,
