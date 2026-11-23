@@ -112,6 +112,11 @@ export type PlaneDerivation = {
   readonly indices: IndexTriple;
 };
 
+/** Transforms each axis component while preserving the three-element tuple. */
+function mapTriple<T, U>([x, y, z]: readonly [T, T, T], map: (value: T) => U): readonly [U, U, U] {
+  return [map(x), map(y), map(z)];
+}
+
 /** Least common multiple of two non-negative integers. */
 function lcmOf(a: number, b: number): number {
   if (a === 0 || b === 0) {
@@ -137,16 +142,16 @@ function gcdOfTriple(triple: IndexTriple): number {
  * index of 0 — the one step students most reliably get backwards.
  */
 export function derivePlaneIndices(intercepts: Intercepts): PlaneDerivation {
-  const reciprocals = intercepts.map((intercept) =>
+  const reciprocals = mapTriple(intercepts, (intercept) =>
     intercept === null || intercept.isZero() ? new Rational(0) : intercept.reciprocal(),
-  ) as unknown as readonly [Rational, Rational, Rational];
+  );
 
   const clearingMultiplier = reciprocals.reduce((accumulated, r) => lcmOf(accumulated, r.denominator), 1);
 
-  const cleared = reciprocals.map((r) => (r.numerator * clearingMultiplier) / r.denominator) as unknown as IndexTriple;
+  const cleared = mapTriple(reciprocals, (r) => (r.numerator * clearingMultiplier) / r.denominator);
 
   const divisor = gcdOfTriple(cleared);
-  const indices = cleared.map((value) => value / divisor) as unknown as IndexTriple;
+  const indices = mapTriple(cleared, (value) => value / divisor);
 
   return { intercepts, reciprocals, clearingMultiplier, cleared, indices };
 }
@@ -156,7 +161,7 @@ export function derivePlaneIndices(intercepts: Intercepts): PlaneDerivation {
  * the origin without passing through it. An index of 0 gives a null intercept.
  */
 export function interceptsFromIndices(indices: IndexTriple): Intercepts {
-  return indices.map((index) => (index === 0 ? null : new Rational(1, index))) as unknown as Intercepts;
+  return mapTriple(indices, (index) => (index === 0 ? null : new Rational(1, index)));
 }
 
 /**
@@ -171,9 +176,9 @@ export function deriveDirectionIndices(components: readonly [Rational, Rational,
   readonly indices: IndexTriple;
 } {
   const clearingMultiplier = components.reduce((accumulated, c) => lcmOf(accumulated, c.denominator), 1);
-  const cleared = components.map((c) => (c.numerator * clearingMultiplier) / c.denominator) as unknown as IndexTriple;
+  const cleared = mapTriple(components, (c) => (c.numerator * clearingMultiplier) / c.denominator);
   const divisor = gcdOfTriple(cleared);
-  const indices = cleared.map((value) => value / divisor) as unknown as IndexTriple;
+  const indices = mapTriple(cleared, (value) => value / divisor);
 
   return { clearingMultiplier, cleared, indices };
 }
