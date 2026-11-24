@@ -18,6 +18,7 @@
  */
 
 import { Multilink, type TReadOnlyProperty, type UnknownMultilink } from "scenerystack/axon";
+import { roundSymmetric } from "scenerystack/dot";
 import { Image, Node, type NodeOptions, Rectangle } from "scenerystack/scenery";
 import CrystalLatticeColors from "../../CrystalLatticeColors.js";
 import type { DiffractionResult } from "../../common/model/DiffractionPattern.js";
@@ -81,7 +82,7 @@ export class DiffractionNode extends Node {
     const image = context.createImageData(result.resolution, result.resolution);
     for (let i = 0; i < result.intensities.length; i++) {
       const intensity = result.intensities[i] ?? 0;
-      const level = Math.round(255 * Math.min(1, intensity) ** DISPLAY_GAMMA);
+      const level = roundSymmetric(255 * Math.min(1, intensity) ** DISPLAY_GAMMA);
       image.data[i * 4] = level;
       image.data[i * 4 + 1] = level;
       image.data[i * 4 + 2] = level;

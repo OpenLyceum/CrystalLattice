@@ -18,7 +18,7 @@
  * No Scenery imports — everything here is unit-testable without a DOM.
  */
 
-import { Vector2 } from "scenerystack/dot";
+import { roundSymmetric, Vector2 } from "scenerystack/dot";
 import { defined } from "../utils/defined.js";
 
 /** The five 2D Bravais lattices. */
@@ -93,7 +93,7 @@ function reducedBasis(parameters: Lattice2DParameters): [Vector2, Vector2] {
   }
   // Each pass strictly shortens w, so this terminates; the cap is only a guard.
   for (let pass = 0; pass < 64; pass++) {
-    const m = Math.round(u.dot(w) / u.magnitudeSquared);
+    const m = roundSymmetric(u.dot(w) / u.magnitudeSquared);
     w = w.minus(u.timesScalar(m));
     if (w.magnitudeSquared >= u.magnitudeSquared) {
       break;

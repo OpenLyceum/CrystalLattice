@@ -32,7 +32,7 @@
  * No Scenery imports — unit-testable without a DOM.
  */
 
-import { Vector2 } from "scenerystack/dot";
+import { roundSymmetric, Vector2 } from "scenerystack/dot";
 import { defined } from "../utils/defined.js";
 
 /** The golden ratio, φ = (1 + √5)/2. Both the inflation factor's root and the tile-count limit. */
@@ -204,7 +204,7 @@ function counterClockwise(
 
 /** Order-independent key for an undirected edge, quantized to `tolerance`. */
 function edgeKey(p: Vector2, q: Vector2, tolerance: number): string {
-  const quantize = (value: number): number => Math.round(value / tolerance);
+  const quantize = (value: number): number => roundSymmetric(value / tolerance);
   const a = `${quantize(p.x)},${quantize(p.y)}`;
   const b = `${quantize(q.x)},${quantize(q.y)}`;
   return a < b ? `${a}|${b}` : `${b}|${a}`;
@@ -249,7 +249,7 @@ export function tilingVertices(tiles: readonly (RobinsonTriangle | PenroseRhombu
   const vertices: Vector2[] = [];
 
   const consider = (point: Vector2): void => {
-    const key = `${Math.round(point.x / tolerance)},${Math.round(point.y / tolerance)}`;
+    const key = `${roundSymmetric(point.x / tolerance)},${roundSymmetric(point.y / tolerance)}`;
     if (!seen.has(key)) {
       seen.add(key);
       vertices.push(point);
@@ -359,7 +359,7 @@ function completeVertexStars(rhombi: readonly PenroseRhombus[]): Set<string> {
     for (let index = 0; index < 4; index++) {
       const vertex = defined(rhombus.vertices[index]);
       const next = defined(rhombus.vertices[(index + 1) % 4]);
-      const key = `${Math.round(vertex.x / 1e-6)},${Math.round(vertex.y / 1e-6)}`;
+      const key = `${roundSymmetric(vertex.x / 1e-6)},${roundSymmetric(vertex.y / 1e-6)}`;
       const entry = {
         angle: cornerAngleUnits(rhombus, index),
         // Order corners around the vertex by the bearing of one bounding edge.
@@ -592,7 +592,7 @@ function centroidKey(rhombus: PenroseRhombus, tolerance: number): string {
   const centroid = rhombus.vertices
     .reduce((sum, vertex) => sum.plus(vertex), new Vector2(0, 0))
     .timesScalar(1 / rhombus.vertices.length);
-  return `${Math.round(centroid.x / tolerance)},${Math.round(centroid.y / tolerance)}`;
+  return `${roundSymmetric(centroid.x / tolerance)},${roundSymmetric(centroid.y / tolerance)}`;
 }
 
 /** Whether a candidate would lie on top of any tile already placed. */

@@ -22,7 +22,7 @@
  * No Scenery imports — unit-testable without a DOM.
  */
 
-import { gcd, Vector2, Vector3 } from "scenerystack/dot";
+import { gcd, roundSymmetric, Vector2, Vector3 } from "scenerystack/dot";
 import { defined } from "../utils/defined.js";
 
 /**
@@ -70,12 +70,12 @@ export class Rational {
    * fraction. Uses a Stern–Brocot / continued-fraction search.
    */
   public static fromNumber(value: number, maxDenominator = 12): Rational {
-    let bestNumerator = Math.round(value);
+    let bestNumerator = roundSymmetric(value);
     let bestDenominator = 1;
     let bestError = Math.abs(value - bestNumerator);
 
     for (let denominator = 2; denominator <= maxDenominator; denominator++) {
-      const numerator = Math.round(value * denominator);
+      const numerator = roundSymmetric(value * denominator);
       const error = Math.abs(value - numerator / denominator);
       if (error < bestError - 1e-12) {
         bestNumerator = numerator;

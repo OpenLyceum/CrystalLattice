@@ -18,7 +18,7 @@
  */
 
 import { Multilink, type UnknownMultilink } from "scenerystack/axon";
-import { type Vector2, Vector3 } from "scenerystack/dot";
+import { roundSymmetric, type Vector2, Vector3 } from "scenerystack/dot";
 import { Shape } from "scenerystack/kite";
 import { Circle, Node, Path, Text } from "scenerystack/scenery";
 import { PhetFont } from "scenerystack/scenery-phet";
@@ -163,7 +163,7 @@ export class CubicCellNode extends Projected3DNode {
 
   /** The "1/8", "1/2" or "1" label that goes with a sharing wedge. */
   private createFractionLabel(fraction: number, view: Vector2): Node {
-    const text = fraction === 1 ? "1" : `1/${Math.round(1 / fraction)}`;
+    const text = fraction === 1 ? "1" : `1/${roundSymmetric(1 / fraction)}`;
     return new Node({
       children: [
         new Circle(11, { center: view, fill: CrystalLatticeColors.sharingBadgeColorProperty }),

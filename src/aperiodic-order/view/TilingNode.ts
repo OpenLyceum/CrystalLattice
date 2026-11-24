@@ -12,7 +12,7 @@
  */
 
 import { Multilink, type UnknownMultilink } from "scenerystack/axon";
-import { Bounds2, Vector2 } from "scenerystack/dot";
+import { Bounds2, roundSymmetric, Vector2 } from "scenerystack/dot";
 import { Shape } from "scenerystack/kite";
 import { Circle, Node, type NodeOptions, Path } from "scenerystack/scenery";
 import CrystalLatticeColors from "../../CrystalLatticeColors.js";
@@ -133,7 +133,7 @@ export class TilingNode extends Node {
         // Edges come in antiparallel pairs, so fold the angle onto [0, π) before
         // bucketing: an edge and its reverse belong to the same direction.
         const folded = ((angle % Math.PI) + Math.PI) % Math.PI;
-        const bucket = Math.round((folded * ORIENTATION_COUNT) / Math.PI) % ORIENTATION_COUNT;
+        const bucket = roundSymmetric((folded * ORIENTATION_COUNT) / Math.PI) % ORIENTATION_COUNT;
 
         const a = toView(from);
         const b = toView(to);
