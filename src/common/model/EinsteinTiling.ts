@@ -31,7 +31,7 @@
  * No Scenery imports — unit-testable without a DOM.
  */
 
-import { Vector2 } from "scenerystack/dot";
+import { roundSymmetric, Vector2 } from "scenerystack/dot";
 import {
   type Affine2D,
   compose,
@@ -513,7 +513,7 @@ export function hatPatchVertices(hats: readonly PlacedHat[], tolerance = 1e-4): 
 
   for (const hat of hats) {
     for (const point of hat.polygon) {
-      const key = `${Math.round(point.x / tolerance)},${Math.round(point.y / tolerance)}`;
+      const key = `${roundSymmetric(point.x / tolerance)},${roundSymmetric(point.y / tolerance)}`;
       if (!seen.has(key)) {
         seen.add(key);
         vertices.push(point);

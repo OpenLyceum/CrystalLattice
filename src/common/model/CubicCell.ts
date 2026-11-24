@@ -24,6 +24,7 @@
  */
 
 import { Vector3 } from "scenerystack/dot";
+import { defined } from "../utils/defined.js";
 
 /** The three cubic structures the screen can build. */
 export const CubicStructure = {
@@ -240,10 +241,8 @@ export function cellEdgeIndices(): Array<readonly [number, number]> {
   const edges: Array<readonly [number, number]> = [];
   for (let i = 0; i < CORNERS.length; i++) {
     for (let j = i + 1; j < CORNERS.length; j++) {
-      // biome-ignore lint/style/noNonNullAssertion: indices are bounded by the loops
-      const a = CORNERS[i]!.fractionalPosition;
-      // biome-ignore lint/style/noNonNullAssertion: indices are bounded by the loops
-      const b = CORNERS[j]!.fractionalPosition;
+      const a = defined(CORNERS[i]).fractionalPosition;
+      const b = defined(CORNERS[j]).fractionalPosition;
       const differences = (a.x === b.x ? 0 : 1) + (a.y === b.y ? 0 : 1) + (a.z === b.z ? 0 : 1);
       if (differences === 1) {
         edges.push([i, j]);

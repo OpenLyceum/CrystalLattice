@@ -32,7 +32,8 @@
  * No Scenery imports — unit-testable without a DOM.
  */
 
-import { Vector2 } from "scenerystack/dot";
+import { roundSymmetric, Vector2 } from "scenerystack/dot";
+import { defined } from "../utils/defined.js";
 
 /** The golden ratio, φ = (1 + √5)/2. Both the inflation factor's root and the tile-count limit. */
 export const GOLDEN_RATIO = (1 + Math.sqrt(5)) / 2;
@@ -174,10 +175,8 @@ export function mergeIntoRhombi(triangles: readonly RobinsonTriangle[], toleranc
   for (const bucket of byEdge.values()) {
     // Pair them off; a well-formed interior always yields exactly two.
     for (let i = 0; i + 1 < bucket.length; i += 2) {
-      // biome-ignore lint/style/noNonNullAssertion: indices are bounded by the loop
-      const first = bucket[i]!;
-      // biome-ignore lint/style/noNonNullAssertion: indices are bounded by the loop
-      const second = bucket[i + 1]!;
+      const first = defined(bucket[i]);
+      const second = defined(bucket[i + 1]);
       // Apex, base start, other apex, base end — a valid cyclic order. Force it
       // counter-clockwise so edge indices mean the same thing on every rhombus.
       rhombi.push({
@@ -205,7 +204,7 @@ function counterClockwise(
 
 /** Order-independent key for an undirected edge, quantized to `tolerance`. */
 function edgeKey(p: Vector2, q: Vector2, tolerance: number): string {
-  const quantize = (value: number): number => Math.round(value / tolerance);
+  const quantize = (value: number): number => roundSymmetric(value / tolerance);
   const a = `${quantize(p.x)},${quantize(p.y)}`;
   const b = `${quantize(q.x)},${quantize(q.y)}`;
   return a < b ? `${a}|${b}` : `${b}|${a}`;
@@ -250,7 +249,7 @@ export function tilingVertices(tiles: readonly (RobinsonTriangle | PenroseRhombu
   const vertices: Vector2[] = [];
 
   const consider = (point: Vector2): void => {
-    const key = `${Math.round(point.x / tolerance)},${Math.round(point.y / tolerance)}`;
+    const key = `${roundSymmetric(point.x / tolerance)},${roundSymmetric(point.y / tolerance)}`;
     if (!seen.has(key)) {
       seen.add(key);
       vertices.push(point);
@@ -358,11 +357,9 @@ function completeVertexStars(rhombi: readonly PenroseRhombus[]): Set<string> {
 
   for (const rhombus of rhombi) {
     for (let index = 0; index < 4; index++) {
-      // biome-ignore lint/style/noNonNullAssertion: index < 4 and vertices has length 4
-      const vertex = rhombus.vertices[index]!;
-      // biome-ignore lint/style/noNonNullAssertion: modular index stays in range
-      const next = rhombus.vertices[(index + 1) % 4]!;
-      const key = `${Math.round(vertex.x / 1e-6)},${Math.round(vertex.y / 1e-6)}`;
+      const vertex = defined(rhombus.vertices[index]);
+      const next = defined(rhombus.vertices[(index + 1) % 4]);
+      const key = `${roundSymmetric(vertex.x / 1e-6)},${roundSymmetric(vertex.y / 1e-6)}`;
       const entry = {
         angle: cornerAngleUnits(rhombus, index),
         // Order corners around the vertex by the bearing of one bounding edge.
@@ -490,10 +487,8 @@ export function rhombusAt(type: RhombusType, apex: Vector2, angle: number, edgeL
 
 /** The bearing of the edge leaving vertex `index` counter-clockwise. */
 function cornerBearing(rhombus: PenroseRhombus, index: number): number {
-  // biome-ignore lint/style/noNonNullAssertion: a rhombus always has four vertices
-  const from = rhombus.vertices[index % 4]!;
-  // biome-ignore lint/style/noNonNullAssertion: modular index stays in range
-  const to = rhombus.vertices[(index + 1) % 4]!;
+  const from = defined(rhombus.vertices[index % 4]);
+  const to = defined(rhombus.vertices[(index + 1) % 4]);
   return Math.atan2(to.y - from.y, to.x - from.x);
 }
 
@@ -511,10 +506,8 @@ export function openEdges(rhombi: readonly PenroseRhombus[], tolerance = 1e-6): 
 
   for (const rhombus of rhombi) {
     for (let index = 0; index < 4; index++) {
-      // biome-ignore lint/style/noNonNullAssertion: index < 4 and vertices has length 4
-      const from = rhombus.vertices[index]!;
-      // biome-ignore lint/style/noNonNullAssertion: modular index stays in range
-      const to = rhombus.vertices[(index + 1) % 4]!;
+      const from = defined(rhombus.vertices[index]);
+      const to = defined(rhombus.vertices[(index + 1) % 4]);
       const key = edgeKey(from, to, tolerance);
       const seen = counts.get(key);
       if (seen) {
@@ -587,8 +580,7 @@ function rhombusOnEdge(
   // the same length, so this is a rigid motion and needs no scaling.
   const canonical = rhombusAt(type, Vector2.ZERO, 0, edgeLength);
   const rotation = Math.atan2(to.y - from.y, to.x - from.x) - cornerBearing(canonical, index);
-  // biome-ignore lint/style/noNonNullAssertion: index < 4 and vertices has length 4
-  const pivot = canonical.vertices[index]!;
+  const pivot = defined(canonical.vertices[index]);
 
   const place = (vertex: Vector2): Vector2 => vertex.minus(pivot).rotated(rotation).plus(from);
   const [v0, v1, v2, v3] = canonical.vertices;
@@ -600,7 +592,7 @@ function centroidKey(rhombus: PenroseRhombus, tolerance: number): string {
   const centroid = rhombus.vertices
     .reduce((sum, vertex) => sum.plus(vertex), new Vector2(0, 0))
     .timesScalar(1 / rhombus.vertices.length);
-  return `${Math.round(centroid.x / tolerance)},${Math.round(centroid.y / tolerance)}`;
+  return `${roundSymmetric(centroid.x / tolerance)},${roundSymmetric(centroid.y / tolerance)}`;
 }
 
 /** Whether a candidate would lie on top of any tile already placed. */
@@ -621,10 +613,8 @@ function overlapsPatch(
 function convexPolygonsOverlap(a: readonly Vector2[], b: readonly Vector2[], slack: number): boolean {
   for (const polygon of [a, b]) {
     for (let index = 0; index < polygon.length; index++) {
-      // biome-ignore lint/style/noNonNullAssertion: index is bounded by the loop
-      const from = polygon[index]!;
-      // biome-ignore lint/style/noNonNullAssertion: modular index stays in range
-      const to = polygon[(index + 1) % polygon.length]!;
+      const from = defined(polygon[index]);
+      const to = defined(polygon[(index + 1) % polygon.length]);
       const axis = new Vector2(-(to.y - from.y), to.x - from.x);
       if (axis.magnitude < 1e-12) {
         continue;
@@ -663,8 +653,7 @@ export function cornersAtVertex(rhombi: readonly PenroseRhombus[], vertex: Vecto
 
   for (const rhombus of rhombi) {
     for (let index = 0; index < 4; index++) {
-      // biome-ignore lint/style/noNonNullAssertion: index < 4 and vertices has length 4
-      if (rhombus.vertices[index]!.distance(vertex) < tolerance) {
+      if (defined(rhombus.vertices[index]).distance(vertex) < tolerance) {
         corners.push({ angle: cornerAngleUnits(rhombus, index), direction: cornerBearing(rhombus, index) });
       }
     }
@@ -698,8 +687,7 @@ export function vertexArcs(corners: readonly VertexCorner[]): VertexCorner[][] {
   // the far side of a gap. When every corner abuts the next the vertex is full
   // and any starting point does, since a complete star is compared cyclically.
   const start = sorted.findIndex((corner, index) => {
-    // biome-ignore lint/style/noNonNullAssertion: modular index stays in range
-    const previous = sorted[(index - 1 + sorted.length) % sorted.length]!;
+    const previous = defined(sorted[(index - 1 + sorted.length) % sorted.length]);
     return !abuts(previous, corner);
   });
   if (start === -1) {
@@ -709,10 +697,8 @@ export function vertexArcs(corners: readonly VertexCorner[]): VertexCorner[][] {
   const arcs: VertexCorner[][] = [];
   let current: VertexCorner[] = [];
   for (let step = 0; step < sorted.length; step++) {
-    // biome-ignore lint/style/noNonNullAssertion: modular index stays in range
-    const corner = sorted[(start + step) % sorted.length]!;
-    // biome-ignore lint/style/noNonNullAssertion: modular index stays in range
-    const previous = sorted[(start + step - 1 + sorted.length) % sorted.length]!;
+    const corner = defined(sorted[(start + step) % sorted.length]);
+    const previous = defined(sorted[(start + step - 1 + sorted.length) % sorted.length]);
     if (step > 0 && !abuts(previous, corner)) {
       arcs.push(current);
       current = [];
@@ -759,8 +745,7 @@ export function isPatchPlacementLegal(
   const mergedRuns: number[][] = [];
 
   for (let index = 0; index < 4; index++) {
-    // biome-ignore lint/style/noNonNullAssertion: index < 4 and vertices has length 4
-    const vertex = candidate.vertices[index]!;
+    const vertex = defined(candidate.vertices[index]);
     const direction = cornerBearing(candidate, index);
     const arcs = vertexArcs(cornersAtVertex([...rhombi, candidate], vertex, tolerance));
 

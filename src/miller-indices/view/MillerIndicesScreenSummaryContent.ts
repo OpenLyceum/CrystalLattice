@@ -20,19 +20,19 @@ export class MillerIndicesScreenSummaryContent extends ScreenSummaryContent {
     const a11y = strings.getMillerIndicesA11yStrings();
     const commonStrings = strings.getCommonStrings();
 
-    const familyCount = new DerivedProperty([model.familyProperty], (family) => `${family.length}`);
+    const familyCountProperty = new DerivedProperty([model.familyProperty], (family) => `${family.length}`);
 
     const planeDetails = new PatternStringProperty(a11y.currentDetailsStringProperty, {
       plane: new DerivedProperty([model.planeIndicesProperty], formatPlane),
       spacing: new DerivedProperty([model.spacingProperty, commonStrings.infinityStringProperty], (value, infinity) =>
         Number.isFinite(value) ? toFixed(value, 4) : infinity,
       ),
-      family: familyCount,
+      family: familyCountProperty,
     });
 
     const directionDetails = new PatternStringProperty(a11y.currentDetailsDirectionStringProperty, {
       direction: new DerivedProperty([model.directionIndicesProperty], formatDirection),
-      family: familyCount,
+      family: familyCountProperty,
     });
 
     super({

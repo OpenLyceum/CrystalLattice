@@ -28,6 +28,7 @@
  */
 
 import { Vector2 } from "scenerystack/dot";
+import { defined } from "../utils/defined.js";
 
 /**
  * Point count past which the direct sum starts costing visible frames. The
@@ -85,10 +86,8 @@ export function computeDiffraction(points: readonly Vector2[], kRange: number, r
   const xs = new Float64Array(points.length);
   const ys = new Float64Array(points.length);
   for (let i = 0; i < points.length; i++) {
-    // biome-ignore lint/style/noNonNullAssertion: index is bounded by points.length
-    xs[i] = points[i]!.x;
-    // biome-ignore lint/style/noNonNullAssertion: index is bounded by points.length
-    ys[i] = points[i]!.y;
+    xs[i] = defined(points[i]).x;
+    ys[i] = defined(points[i]).y;
   }
 
   const step = resolution > 1 ? (2 * kRange) / (resolution - 1) : 0;
@@ -103,8 +102,7 @@ export function computeDiffraction(points: readonly Vector2[], kRange: number, r
       let real = 0;
       let imaginary = 0;
       for (let i = 0; i < xs.length; i++) {
-        // biome-ignore lint/style/noNonNullAssertion: typed-array reads are always defined
-        const phase = kx * xs[i]! + ky * ys[i]!;
+        const phase = kx * defined(xs[i]) + ky * defined(ys[i]);
         real += Math.cos(phase);
         imaginary += Math.sin(phase);
       }
@@ -120,8 +118,7 @@ export function computeDiffraction(points: readonly Vector2[], kRange: number, r
 
   if (peak > 0) {
     for (let i = 0; i < intensities.length; i++) {
-      // biome-ignore lint/style/noNonNullAssertion: typed-array reads are always defined
-      intensities[i] = Math.min(1, intensities[i]! / peak);
+      intensities[i] = Math.min(1, defined(intensities[i]) / peak);
     }
   }
 

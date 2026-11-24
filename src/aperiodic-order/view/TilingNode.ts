@@ -12,12 +12,13 @@
  */
 
 import { Multilink, type UnknownMultilink } from "scenerystack/axon";
-import { Bounds2, Vector2 } from "scenerystack/dot";
+import { Bounds2, roundSymmetric, Vector2 } from "scenerystack/dot";
 import { Shape } from "scenerystack/kite";
 import { Circle, Node, type NodeOptions, Path } from "scenerystack/scenery";
 import CrystalLatticeColors from "../../CrystalLatticeColors.js";
 import { MetatileType, type PlacedHat } from "../../common/model/EinsteinTiling.js";
 import { type PenroseRhombus, RhombusType } from "../../common/model/PenroseTiling.js";
+import { defined } from "../../common/utils/defined.js";
 import { replaceChildren } from "../../common/view/replaceChildren.js";
 import { type AperiodicOrderModel, TilingMode } from "../model/AperiodicOrderModel.js";
 
@@ -126,20 +127,17 @@ export class TilingNode extends Node {
 
     for (const entry of polygons) {
       for (let i = 0; i < entry.points.length; i++) {
-        // biome-ignore lint/style/noNonNullAssertion: index is bounded by the loop
-        const from = entry.points[i]!;
-        // biome-ignore lint/style/noNonNullAssertion: modular index stays in range
-        const to = entry.points[(i + 1) % entry.points.length]!;
+        const from = defined(entry.points[i]);
+        const to = defined(entry.points[(i + 1) % entry.points.length]);
         const angle = Math.atan2(to.y - from.y, to.x - from.x);
         // Edges come in antiparallel pairs, so fold the angle onto [0, π) before
         // bucketing: an edge and its reverse belong to the same direction.
         const folded = ((angle % Math.PI) + Math.PI) % Math.PI;
-        const bucket = Math.round((folded * ORIENTATION_COUNT) / Math.PI) % ORIENTATION_COUNT;
+        const bucket = roundSymmetric((folded * ORIENTATION_COUNT) / Math.PI) % ORIENTATION_COUNT;
 
         const a = toView(from);
         const b = toView(to);
-        // biome-ignore lint/style/noNonNullAssertion: bucket is bounded by the modulo
-        byDirection[bucket]!.moveTo(a.x, a.y).lineTo(b.x, b.y);
+        defined(byDirection[bucket]).moveTo(a.x, a.y).lineTo(b.x, b.y);
       }
     }
 
@@ -154,8 +152,7 @@ export class TilingNode extends Node {
     return byDirection.map(
       (shape, index) =>
         new Path(shape, {
-          // biome-ignore lint/style/noNonNullAssertion: palette matches ORIENTATION_COUNT
-          stroke: palette[index]!,
+          stroke: defined(palette[index]),
           lineWidth: 2,
         }),
     );

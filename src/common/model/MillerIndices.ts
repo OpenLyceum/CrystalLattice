@@ -22,7 +22,8 @@
  * No Scenery imports — unit-testable without a DOM.
  */
 
-import { gcd, Vector2, Vector3 } from "scenerystack/dot";
+import { gcd, roundSymmetric, Vector2, Vector3 } from "scenerystack/dot";
+import { defined } from "../utils/defined.js";
 
 /**
  * An exact rational, used for intercepts and direction components so the
@@ -69,12 +70,12 @@ export class Rational {
    * fraction. Uses a Stern–Brocot / continued-fraction search.
    */
   public static fromNumber(value: number, maxDenominator = 12): Rational {
-    let bestNumerator = Math.round(value);
+    let bestNumerator = roundSymmetric(value);
     let bestDenominator = 1;
     let bestError = Math.abs(value - bestNumerator);
 
     for (let denominator = 2; denominator <= maxDenominator; denominator++) {
-      const numerator = Math.round(value * denominator);
+      const numerator = roundSymmetric(value * denominator);
       const error = Math.abs(value - numerator / denominator);
       if (error < bestError - 1e-12) {
         bestNumerator = numerator;
@@ -450,10 +451,8 @@ function boxEdges(minimum: Vector3, maximum: Vector3): Array<readonly [Vector3, 
   const edges: Array<readonly [Vector3, Vector3]> = [];
   for (let i = 0; i < corners.length; i++) {
     for (let j = i + 1; j < corners.length; j++) {
-      // biome-ignore lint/style/noNonNullAssertion: indices are bounded by the loops
-      const from = corners[i]!;
-      // biome-ignore lint/style/noNonNullAssertion: indices are bounded by the loops
-      const to = corners[j]!;
+      const from = defined(corners[i]);
+      const to = defined(corners[j]);
       // Two corners bound an edge when they differ in exactly one coordinate.
       const differing = (from.x === to.x ? 0 : 1) + (from.y === to.y ? 0 : 1) + (from.z === to.z ? 0 : 1);
       if (differing === 1) {
@@ -499,8 +498,7 @@ function sortAroundNormal(points: readonly Vector3[], normal: Vector3): Vector3[
   const unitNormal = normal.normalized();
 
   // Any vector in the plane works as the angular origin.
-  // biome-ignore lint/style/noNonNullAssertion: guarded by the length check above
-  const reference = points[0]!.minus(centroid).normalized();
+  const reference = defined(points[0]).minus(centroid).normalized();
   const orthogonal = unitNormal.cross(reference);
 
   return [...points].sort((a, b) => {
@@ -602,8 +600,7 @@ function inPlaneCellArea(
   }
 
   const byLength = [...points].sort((a, b) => a.magnitude - b.magnitude);
-  // biome-ignore lint/style/noNonNullAssertion: guarded by the length check above
-  const shortest = byLength[0]!;
+  const shortest = defined(byLength[0]);
 
   // The second vector must be independent of the first — a non-zero cross product.
   for (const candidate of byLength) {

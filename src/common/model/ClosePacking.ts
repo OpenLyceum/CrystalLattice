@@ -28,6 +28,7 @@
  */
 
 import { Vector2, Vector3 } from "scenerystack/dot";
+import { defined } from "../utils/defined.js";
 
 /** The three in-plane offsets a close-packed layer can occupy. */
 export const LayerPosition = {
@@ -147,8 +148,7 @@ export function generateStack(
 export function canonicalSequence(type: "hcp" | "fcc", layerCount: number): LayerPosition[] {
   const period = type === StackingType.HCP ? 2 : 3;
   return Array.from({ length: layerCount }, (_unused, index) => {
-    // biome-ignore lint/style/noNonNullAssertion: modular index always lands in LAYER_ORDER
-    return LAYER_ORDER[index % period]!;
+    return defined(LAYER_ORDER[index % period]);
   });
 }
 
@@ -188,10 +188,8 @@ export function classifyStacking(sequence: readonly LayerPosition[]): StackingTy
 
   const steps: number[] = [];
   for (let i = 0; i < sequence.length - 1; i++) {
-    // biome-ignore lint/style/noNonNullAssertion: indices are bounded by the loop
-    const from = LAYER_ORDER.indexOf(sequence[i]!);
-    // biome-ignore lint/style/noNonNullAssertion: indices are bounded by the loop
-    const to = LAYER_ORDER.indexOf(sequence[i + 1]!);
+    const from = LAYER_ORDER.indexOf(defined(sequence[i]));
+    const to = LAYER_ORDER.indexOf(defined(sequence[i + 1]));
     const step = (to - from + 3) % 3;
     if (step === 0) {
       return StackingType.INVALID;
@@ -223,10 +221,8 @@ export function jagodzinskiSymbols(sequence: readonly LayerPosition[]): Array<"h
     if (index === 0 || index === sequence.length - 1) {
       return null;
     }
-    // biome-ignore lint/style/noNonNullAssertion: interior indices always have neighbours
-    const previous = LAYER_ORDER.indexOf(sequence[index - 1]!);
-    // biome-ignore lint/style/noNonNullAssertion: interior indices always have neighbours
-    const next = LAYER_ORDER.indexOf(sequence[index + 1]!);
+    const previous = LAYER_ORDER.indexOf(defined(sequence[index - 1]));
+    const next = LAYER_ORDER.indexOf(defined(sequence[index + 1]));
     return previous === next ? "h" : "c";
   });
 }
