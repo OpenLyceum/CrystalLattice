@@ -47,6 +47,7 @@ import { cellCorners, cellEdgeIndices } from "../../common/model/CubicCell.js";
 import type { IndexTriple } from "../../common/model/MillerIndices.js";
 import { planePolygonInCell } from "../../common/model/MillerIndices.js";
 import type { Projection3D } from "../../common/model/Projection3D.js";
+import { defined } from "../../common/utils/defined.js";
 import { Projected3DNode, type Projected3DNodeOptions } from "../../common/view/Projected3DNode.js";
 import { replaceChildren } from "../../common/view/replaceChildren.js";
 import { StringManager } from "../../i18n/StringManager.js";
@@ -137,8 +138,7 @@ export class MillerCellNode extends Projected3DNode {
     ];
 
     this.interceptHandles = AXES.map((axis) =>
-      // biome-ignore lint/style/noNonNullAssertion: the arrays are indexed by AXES
-      this.createInterceptHandle(axis, axisColors[axis]!, interceptNames[axis]!),
+      this.createInterceptHandle(axis, defined(axisColors[axis]), defined(interceptNames[axis])),
     );
     this.directionHandle = this.createDirectionHandle(a11y.controls.directionHandleStringProperty);
 
@@ -206,8 +206,7 @@ export class MillerCellNode extends Projected3DNode {
    */
   private positionHandles(camera: Projection3D, offset: Vector3, isPlaneMode: boolean): void {
     for (const axis of AXES) {
-      // biome-ignore lint/style/noNonNullAssertion: interceptHandles is indexed by AXES
-      const handle = this.interceptHandles[axis]!;
+      const handle = defined(this.interceptHandles[axis]);
       handle.visible = isPlaneMode;
 
       const intercept = this.model.interceptsProperty.value[axis];

@@ -19,6 +19,7 @@
  */
 
 import { Vector2 } from "scenerystack/dot";
+import { defined } from "../utils/defined.js";
 
 /** The five 2D Bravais lattices. */
 export const Lattice2DType = {
@@ -416,10 +417,8 @@ function clipToBisectorHalfPlane(polygon: readonly Vector2[], neighbor: Vector2)
   const result: Vector2[] = [];
 
   for (let i = 0; i < polygon.length; i++) {
-    // biome-ignore lint/style/noNonNullAssertion: index is bounded by the loop
-    const current = polygon[i]!;
-    // biome-ignore lint/style/noNonNullAssertion: modular index stays in range
-    const next = polygon[(i + 1) % polygon.length]!;
+    const current = defined(polygon[i]);
+    const next = defined(polygon[(i + 1) % polygon.length]);
     const currentInside = inside(current);
     const nextInside = inside(next);
 

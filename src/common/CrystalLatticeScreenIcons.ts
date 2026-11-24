@@ -25,6 +25,7 @@ import { CubicStructure, cellCorners, cellEdgeIndices, generateCellAtoms } from 
 import { planePolygonInCell } from "./model/MillerIndices.js";
 import { generatePenroseTiling, mergeIntoRhombi, type PenroseRhombus, RhombusType } from "./model/PenroseTiling.js";
 import { DEFAULT_PITCH, DEFAULT_YAW, Projection3D } from "./model/Projection3D.js";
+import { defined } from "./utils/defined.js";
 import { AtomNode } from "./view/AtomNode.js";
 
 /** The standard PhET screen-icon canvas. */
@@ -79,10 +80,8 @@ function cubeWireframe(camera: Projection3D, offset: Vector3): Path {
   const shape = new Shape();
 
   for (const [from, to] of cellEdgeIndices()) {
-    // biome-ignore lint/style/noNonNullAssertion: indices come from cellEdgeIndices
-    const a = camera.projectToView(corners[from]!);
-    // biome-ignore lint/style/noNonNullAssertion: indices come from cellEdgeIndices
-    const b = camera.projectToView(corners[to]!);
+    const a = camera.projectToView(defined(corners[from]));
+    const b = camera.projectToView(defined(corners[to]));
     shape.moveTo(a.x, a.y).lineTo(b.x, b.y);
   }
 

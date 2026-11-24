@@ -21,6 +21,7 @@ import CrystalLatticeColors from "../../CrystalLatticeColors.js";
 import { CONTROL_PANEL_WIDTH, READOUT_FONT_SIZE } from "../../CrystalLatticeConstants.js";
 import { CrystalLatticePanel, type CrystalLatticePanelOptions } from "../../common/CrystalLatticePanel.js";
 import { formatPlane, type PlaneDerivation } from "../../common/model/MillerIndices.js";
+import { defined } from "../../common/utils/defined.js";
 import { createHeading } from "../../common/view/ControlFactory.js";
 import { StringManager } from "../../i18n/StringManager.js";
 
@@ -50,10 +51,7 @@ export class DerivationPanel extends CrystalLatticePanel {
           1,
           strings.stepReciprocalsStringProperty,
           (axis) =>
-            new DerivedProperty([derivationProperty], (derivation) =>
-              // biome-ignore lint/style/noNonNullAssertion: axis is always 0, 1 or 2
-              derivation.reciprocals[axis]!.toString(),
-            ),
+            new DerivedProperty([derivationProperty], (derivation) => defined(derivation.reciprocals[axis]).toString()),
         ),
         ...stageRow(
           2,

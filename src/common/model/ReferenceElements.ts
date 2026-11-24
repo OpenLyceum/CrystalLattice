@@ -6,6 +6,7 @@
  * `elements.json` so it can be extended without touching model code.
  */
 
+import { defined } from "../utils/defined.js";
 import { CubicStructure } from "./CubicCell.js";
 import elementsData from "./elements.json";
 
@@ -35,8 +36,7 @@ const STRUCTURE_BY_KEY: Record<string, CubicStructure> = {
 export const REFERENCE_ELEMENTS: readonly ReferenceElement[] = elementsData.elements.map((entry) => ({
   symbol: entry.symbol,
   name: entry.name,
-  // biome-ignore lint/style/noNonNullAssertion: elements.json is validated by this map at load
-  structure: STRUCTURE_BY_KEY[entry.structure]!,
+  structure: defined(STRUCTURE_BY_KEY[entry.structure]),
   latticeConstantNm: entry.latticeConstantNm,
   molarMass: entry.molarMass,
   measuredDensity: entry.measuredDensity,
